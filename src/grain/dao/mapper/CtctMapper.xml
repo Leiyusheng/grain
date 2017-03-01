@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="grain.dao.mapper.CtctMapper">
+
+    <!-- 根据用户id查询用户信息
+    编写statement
+    parameterType：指定传入数据参数的类型
+    resultType：映射生成的java对象类型，select查询结果集的列名要和resultType指定java对象的属性名保持一致才可以映射
+    #{}:表示占位符,如果要传递简单类型数据，#{}可以写任意名称
+     -->
+     <select id="findContactById" resultType="contact">
+         SELECT * FROM contact WHERE teacher_id=#{t_id} AND student_id=#{s_id}
+     </select>
+     
+     <select id="findContactByPhone" resultType="contact">
+         SELECT contact.* FROM contact,teacher
+		 WHERE phone_number=#{phone} AND student_id=#{s_id} AND contact.teacher_id=teacher.teacher_id
+     </select>
+     
+     <select id="findApplyListById" parameterType="String"
+         resultType="contact">
+         SELECT contact.*,student_name,head_logo FROM contact,student 
+         WHERE contact.student_id=student.student_id AND teacher_id=#{value}
+         ORDER BY create_time DESC
+     </select>
+     
+     <select id="findAppliedListById" parameterType="String"
+         resultType="contact">
+         SELECT contact.*,teacher_name,head_logo FROM contact,teacher 
+         WHERE contact.teacher_id=teacher.teacher_id AND student_id=#{value}
+         ORDER BY create_time DESC
+     </select>
+     
+     <update id="updateContact">
+         UPDATE contact SET `status`=#{status} 
+         WHERE teacher_id=#{t_id} AND student_id=#{s_id}
+     </update>
+     
+     <update id="updateShowStatus">
+         UPDATE contact SET show_status=#{status} 
+         WHERE teacher_id=#{t_id} AND student_id=#{s_id}
+     </update>
+     
+     <update id="updateContactTime">
+         UPDATE contact SET apply_info=#{info},create_time=now() 
+         WHERE teacher_id=#{t_id} AND student_id=#{s_id}
+     </update>
+     
+     <insert id="insertContact" parameterType="contact">
+         INSERT INTO contact(teacher_id,student_id,status,apply_info) 
+         VALUES(#{teacher_id},#{student_id},#{status},#{apply_info})
+     </insert>
+</mapper>
+

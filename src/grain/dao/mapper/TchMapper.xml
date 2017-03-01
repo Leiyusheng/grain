@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="grain.dao.mapper.TchMapper">
+
+    <!-- 根据用户id查询用户信息
+    编写statement
+    parameterType：指定传入数据参数的类型
+    resultType：映射生成的java对象类型，select查询结果集的列名要和resultType指定java对象的属性名保持一致才可以映射
+    #{}:表示占位符,如果要传递简单类型数据，#{}可以写任意名称
+     -->
+     <select id="findTchById" parameterType="String"
+     resultType="teacher">
+         SELECT * FROM teacher WHERE teacher_id=#{value} 
+     </select>
+    
+	 <select id="findTchByPhone" parameterType="String"
+     resultType="teacher">
+         SELECT * FROM teacher WHERE phone_number=#{value} 
+     </select>
+     
+	 <insert id="insertTch" parameterType="teacher">
+	     INSERT INTO teacher(teacher_id,teacher_name,password,phone_number)
+	     VALUES(#{teacher_id},#{teacher_name},#{password},#{phone_number})
+	 </insert>
+	 
+	 <update id="updateTchById" parameterType="teacher">
+	     UPDATE teacher SET 
+	     teacher_name = #{teacher_name},password = #{password},phone_number = #{phone_number},
+	     head_logo=#{head_logo},gender = #{gender},birthday = #{birthday},personalized_signature = #{personalized_signature},
+	     teacher_info = #{teacher_info},student_count = #{student_count},home_background = #{home_background},board_background = #{board_background}
+	     WHERE teacher_id = #{teacher_id}
+	 </update>
+	 
+	 <select id="findTchListById" parameterType="String"
+	     resultType="teacher">
+	     SELECT teacher.* FROM teacher,contact 
+	     WHERE teacher.teacher_id=contact.teacher_id AND `status`=1
+	     AND student_id=#{value}
+	     ORDER BY CONVERT(teacher_name USING gbk)
+	 </select>
+	 
+	 <update id="updateTchStuCount">
+	     UPDATE teacher SET
+	     <if test="status==1">
+             student_count=student_count+1
+         </if>
+         <if test="status==0">
+             student_count=student_count-1
+         </if>
+         WHERE teacher_id=#{t_id}
+	 </update>
+</mapper>
+

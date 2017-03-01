@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="grain.dao.mapper.GrpMapper">
+
+    <!-- 根据用户id查询用户信息
+    编写statement
+    parameterType：指定传入数据参数的类型
+    resultType：映射生成的java对象类型，select查询结果集的列名要和resultType指定java对象的属性名保持一致才可以映射
+    #{}:表示占位符,如果要传递简单类型数据，#{}可以写任意名称
+     -->
+     <select id="findDefaultGroupById" parameterType="String"
+         resultType="group">
+         SELECT * FROM `group` WHERE group_id=#{value}
+     </select>
+     
+     <!-- 查找分组是否重名 -->
+     <select id="findGroupByName" resultType="group">
+         SELECT * FROM `group` WHERE teacher_id=#{t_id} AND group_name=#{grp_name}
+     </select>
+     
+     <select id="findGroupListById" parameterType="String"
+         resultType="group">
+         SELECT * FROM `group` WHERE teacher_id=#{value} AND group_id!=#{value}
+         ORDER BY CONVERT(group_name USING gbk)
+     </select>
+     
+     <insert id="insertGroup" parameterType="group">
+         INSERT INTO `group`(group_id,teacher_id ,group_name)
+		 VALUES(#{group_id},#{teacher_id},#{group_name})
+     </insert>
+     
+     <delete id="deleteGroup" parameterType="String">
+         DELETE FROM `group` WHERE group_id=#{value}
+     </delete>
+     
+     <select id="findGroupStu" parameterType="String"
+         resultType="Student">
+         SELECT student.* FROM student,groupstudent 
+         WHERE student.student_id=groupstudent.student_id
+		 AND group_id=#{value} 
+		 ORDER BY CONVERT(student_name USING gbk)
+     </select>
+     
+     <insert id="insertGroupStu">
+         INSERT INTO groupstudent VALUES(#{g_id},#{s_id})
+     </insert>
+     
+     <delete id="deleteGroupStu">
+         DELETE FROM groupstudent WHERE group_id=#{g_id} AND student_id=#{s_id}
+     </delete>
+     
+     <!-- 删除老师所有分组下的该学生 -->
+     <delete id="deleteStu">
+         DELETE groupstudent.* FROM groupstudent,`group` 
+		 WHERE `group`.group_id=groupstudent.group_id 
+		 AND `group`.teacher_id=#{t_id} AND student_id=#{s_id}
+     </delete>
+     
+     <!-- 老师所有有该学生分组学生数减1 -->
+     <update id="updateStuCount">
+         UPDATE groupstudent,`group` SET student_count=student_count-1
+         WHERE `group`.group_id=groupstudent.group_id 
+		 AND `group`.teacher_id=#{t_id} AND student_id=#{s_id}
+     </update>
+     
+     <!-- 1为加，0为减 -->
+     <update id="updateGroupStuCount">
+         UPDATE `group` SET 
+         <if test="status==1">
+             student_count=student_count+1
+         </if>
+         <if test="status==0">
+             student_count=student_count-1
+         </if>
+         WHERE group_id=#{g_id}
+     </update>
+     
+     <update id="updateGroupName">
+         UPDATE `group` SET group_name=#{g_name}
+         WHERE group_id=#{g_id}
+     </update>
+</mapper>
+

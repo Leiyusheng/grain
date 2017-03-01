@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="grain.dao.mapper.TaskResultMapper">
+    
+    <!-- 根据用户id查询用户信息
+    编写statement
+    parameterType：指定传入数据参数的类型
+    resultType：映射生成的java对象类型，select查询结果集的列名要和resultType指定java对象的属性名保持一致才可以映射
+    #{}:表示占位符,如果要传递简单类型数据，#{}可以写任意名称
+     -->
+     
+     <select id="findTaskResultById" parameterType="String"
+         resultType="taskResult">
+         SELECT * FROM taskresult WHERE task_result_id=#{value}
+     </select>
+     
+     <!-- 查找学生今天某任务结果 -->
+     <select id="findTaskResultByStu" resultType="taskResult">
+         SELECT * FROM taskresult WHERE task_id=#{task_id} AND student_id=#{s_id} 
+         AND TO_DAYS(publish_time)=TO_DAYS(NOW())
+     </select>
+     
+     <!-- 查找今天某任务已发表结果数 -->
+     <select id="findTaskResultNumById" parameterType="String"
+         resultType="int">
+         SELECT count(*) FROM taskresult WHERE task_id=#{value} 
+         AND TO_DAYS(publish_time)=TO_DAYS(NOW()) AND status=1
+     </select>
+     
+     <insert id="insertTaskResult" parameterType="taskResult">
+         INSERT INTO 
+         taskresult(task_result_id,student_id,task_id,task_name) 
+         VALUES(#{task_result_id},#{student_id},#{task_id},#{task_name})
+     </insert>
+     
+     <update id="updateTaskResult" parameterType="taskResult">
+         UPDATE taskresult SET 
+         practice_time=#{practice_time},self_score=#{self_score},finish_photo=#{finish_photo},comments=#{comments} 
+         WHERE task_result_id=#{task_result_id}
+     </update>
+     
+     <select id="findPraise" parameterType="praise"
+         resultType="praise">
+         SELECT * FROM praise WHERE task_result_id=#{task_result_id} 
+         AND person_id=#{person_id}
+     </select>
+     
+     <insert id="insertPraise" parameterType="praise">
+         INSERT INTO praise(task_result_id,person_id,praise_status) 
+         VALUES(#{task_result_id},#{person_id},#{praise_status})
+     </insert>
+     
+     <update id="updatePraise" parameterType="praise">
+         UPDATE praise SET praise_status=#{praise_status} 
+         WHERE task_result_id=#{task_result_id} AND person_id=#{person_id}
+     </update>
+     
+     <select id="findTaskResultByDate" resultType="taskResult">
+         SELECT * FROM taskresult 
+         WHERE task_id=#{task_id} AND student_id=#{s_id} 
+         ORDER BY publish_time
+     </select>
+     
+     <select id="findTaskResultByTch" resultType="taskResultTotalInf">
+         SELECT student.student_id,student_name,head_logo,difficulty_level,
+		 COALESCE(SUM(taskresult.practice_time),0) AS total_time,
+		 COALESCE(result.practice_time,0) AS today_time,result.self_score
+		 FROM ((taskstudent LEFT JOIN taskresult  
+		 ON taskstudent.task_id=taskresult.task_id AND taskstudent.student_id=taskresult.student_id)
+		 LEFT JOIN student ON taskstudent.student_id=student.student_id)
+		 LEFT JOIN (SELECT student_id AS s_id,task_id AS t_id,practice_time,self_score 
+		 FROM taskresult WHERE TO_DAYS(publish_time)=TO_DAYS(NOW())) AS result
+		 ON taskstudent.task_id=result.t_id AND taskstudent.student_id=result.s_id
+		 WHERE taskstudent.task_id=#{value}
+  		 GROUP BY taskstudent.student_id
+  		 ORDER BY CONVERT(student_name USING gbk)
+     </select>
+</mapper>
+

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="grain.dao.mapper.TaskMapper">
+
+    <!-- 根据用户id查询用户信息
+    编写statement
+    parameterType：指定传入数据参数的类型
+    resultType：映射生成的java对象类型，select查询结果集的列名要和resultType指定java对象的属性名保持一致才可以映射
+    #{}:表示占位符,如果要传递简单类型数据，#{}可以写任意名称
+     -->
+     <select id="findTaskByTaskId" parameterType="String"
+         resultType="task">
+         SELECT task.*,teacher_name FROM task,teacher 
+         WHERE task.teacher_id=teacher.teacher_id AND task_id=#{value}
+     </select>
+     
+     <insert id="insertTask" parameterType="task">
+         INSERT INTO task 
+         VALUES(#{task_id},#{teacher_id},#{task_logo},#{task_name},
+         #{difficulty_level},#{start_date},#{end_date},#{task_info},#{status},#{total_num})
+     </insert>
+     
+     <insert id="insertTaskStu" parameterType="taskStudent">
+         INSERT INTO taskstudent VALUES(#{task_id},#{student_id},#{difficulty_level})
+     </insert>
+     
+     <delete id="deleteTaskStu">
+         DELETE FROM taskstudent WHERE task_id=#{task_id} AND student_id=#{s_id}
+     </delete>
+     
+     <update id="updateTaskStuCount">
+         UPDATE task SET 
+         <if test="status==1">
+             total_num=total_num+1
+         </if>
+         <if test="status==0">
+             total_num=total_num-1
+         </if>
+         WHERE task_id=#{task_id}
+     </update>
+     
+     <select id="findTaskStuList" parameterType="String"
+         resultType="student">
+         SELECT student.* FROM student,taskstudent 
+         WHERE task_id=#{value} AND student.student_id=taskstudent.student_id
+     </select>
+     
+     <select id="findTaskStuById" resultType="taskStudent">
+         SELECT * FROM taskstudent WHERE task_id=#{task_id} AND student_id=#{s_id}
+     </select>
+     
+     <update id="updateTaskLevel" parameterType="taskStudent">
+         UPDATE taskstudent SET 
+         difficulty_level=#{difficulty_level}
+         WHERE task_id=#{task_id} AND student_id=#{student_id}
+     </update>
+     
+     <update id="updateTask" parameterType="task">
+         UPDATE task SET 
+         task_logo=#{task_logo},task_name=#{task_name},difficulty_level=#{difficulty_level},
+         start_date=#{start_date},end_date=#{end_date},task_info=#{task_info},`status`=#{status}
+         WHERE task_id=#{task_id}
+     </update>
+     
+     <select id="findTaskCenterByStu" parameterType="String"
+         resultType="task">
+         SELECT task.*,teacher_name FROM task,teacher,taskstudent 
+         WHERE task.teacher_id=teacher.teacher_id AND taskstudent.task_id=task.task_id 
+         AND `status`!=3 AND student_id=#{value}
+         ORDER BY `status` ASC,CONVERT(task_name USING gbk) ASC
+     </select>
+     
+     <select id="searchTaskCenterByStu" resultType="task">
+         SELECT task.*,teacher_name FROM task,teacher,taskstudent 
+         WHERE task.teacher_id=teacher.teacher_id AND taskstudent.task_id=task.task_id 
+         AND `status`!=3 AND student_id=#{id} 
+         AND (locate(#{key},task_name)>0 OR locate(#{key},task_info)>0)
+         ORDER BY `status` ASC,CONVERT(task_name USING gbk) ASC
+     </select>
+     
+     <select id="findTaskCenterByTch" parameterType="String"
+         resultType="task">
+         SELECT * FROM task WHERE teacher_id=#{value} AND `status`!=3
+         ORDER BY `status` ASC,CONVERT(task_name USING gbk) ASC
+     </select>
+     
+     <select id="searchTaskCenterByTch" resultType="task">
+         SELECT * FROM task WHERE teacher_id=#{id} AND `status`!=3
+         AND (locate(#{key},task_name)>0 OR locate(#{key},task_info)>0)
+         ORDER BY `status` ASC,CONVERT(task_name USING gbk) ASC
+     </select>
+     
+     <select id="findStuTaskByTch" resultType="task">
+         SELECT task.* FROM task,taskstudent 
+		 WHERE taskstudent.task_id=task.task_id AND student_id=#{s_id}
+		 AND `status`!=3 AND task.teacher_id=#{t_id}
+		 ORDER BY `status` ASC,CONVERT(task_name USING gbk) ASC
+     </select>
+     
+     <select id="findTchTaskByStu" resultType="task">
+         SELECT task.*,teacher_name FROM task,teacher,taskstudent 
+         WHERE task.teacher_id=teacher.teacher_id AND task.teacher_id=#{t_id}  
+         AND taskstudent.task_id=task.task_id AND `status`!=3 AND student_id=#{s_id}
+         ORDER BY `status` ASC,CONVERT(task_name USING gbk) ASC
+     </select>
+     
+     <select id="findTodayTaskByStuId" parameterType="String"
+         resultType="task">
+         SELECT task.*,teacher_name
+         FROM task,teacher,taskstudent
+         WHERE student_id=#{value}
+         AND task.task_id=taskstudent.task_id 
+         AND task.teacher_id=teacher.teacher_id
+         AND status=1
+         ORDER BY CONVERT(task_name USING gbk) ASC
+     </select>
+     
+     <select id="searchTodayTaskByStuId" resultType="task">
+         SELECT task.*,teacher_name
+         FROM task,teacher,taskstudent
+         WHERE student_id=#{id}
+         AND task.task_id=taskstudent.task_id 
+         AND task.teacher_id=teacher.teacher_id
+         AND status=1
+         AND (locate(#{key},task_name)>0 OR locate(#{key},task_info)>0)
+     </select>
+     
+     <select id="findTodayTaskByTchId" parameterType="String"
+         resultType="task">
+         SELECT * FROM task WHERE teacher_id=#{value} AND status=1
+         ORDER BY CONVERT(task_name USING gbk) ASC
+     </select>
+
+     <select id="searchTodayTaskByTchId" resultType="task">
+         SELECT * FROM task WHERE teacher_id=#{id} AND status=1
+         AND (locate(#{key},task_name)>0 OR locate(#{key},task_info)>0)
+     </select>
+</mapper>
+

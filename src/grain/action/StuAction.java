@@ -9,7 +9,7 @@ import grain.dto.ApplyList;
 import grain.dto.CheckStuInf;
 import grain.dto.CheckTaskResultInf;
 import grain.dto.CheckTaskStuInf;
-import grain.dto.CheckTchSearchInf;
+import grain.dto.CheckSearchInf;
 import grain.dto.Msg;
 import grain.dto.TaskBoard;
 import grain.dto.TaskResultList;
@@ -90,12 +90,12 @@ public class StuAction {
 		return stuService.updateStuAccess(s_id, access);
 	}
 	
-	@RequestMapping("/checkTch")
-	public @ResponseBody CheckTchSearchInf checkTch(String s_id,String phone)throws Exception{
-		return tchService.findTchByPhone(s_id,phone);
+	@RequestMapping("/checkStu")
+	public @ResponseBody CheckSearchInf checkStu(String t_id,String phone)throws Exception{
+		return stuService.findStuByPhone(t_id,phone);
 	}
 	
-	@RequestMapping("/applyTch")//0成功，1已添加，2其他
+	@RequestMapping("/applyTch")//0成功，1已添加，2老师不存在，3其他
 	public @ResponseBody Msg applyTch(String s_id,String t_id,String info)throws Exception{
 		return stuService.updateTchApply(s_id, t_id, info);
 	}
@@ -105,14 +105,14 @@ public class StuAction {
 		return stuService.findTchList(s_id);
 	}
 	
-	@RequestMapping("/checkAppliedList")
-	public @ResponseBody ApplyList checkAppliedList(String s_id)throws Exception{
-		return stuService.findAppliedList(s_id);
+	@RequestMapping("/checkTchApplyList")
+	public @ResponseBody ApplyList checkTchApplyList(String s_id)throws Exception{
+		return stuService.findApplyList(s_id);
 	}
 	
-	@RequestMapping("/delApplied")
-	public @ResponseBody Msg delApplied(String t_id,String s_id)throws Exception{
-		return stuService.deleteApplied(t_id, s_id);
+	@RequestMapping("/delTchApply")
+	public @ResponseBody Msg delTchApply(String t_id,String s_id)throws Exception{
+		return stuService.deleteApply(t_id, s_id);
 	}
 	
 	@RequestMapping("/delTch")
@@ -179,5 +179,10 @@ public class StuAction {
 	@RequestMapping("/checkStuBoard")
 	public @ResponseBody TaskBoard checkStuBoard(String s_id,String last_time)throws Exception{
 		return taskService.findBoardForStu(s_id, last_time);
+	}
+	
+	@RequestMapping("/checkStuNewResult")
+	public @ResponseBody Msg checkStuNewResult(String s_id,String last_time)throws Exception{
+		return taskService.findStuNewResult(s_id, last_time);
 	}
 }

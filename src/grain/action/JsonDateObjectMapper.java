@@ -10,7 +10,9 @@ import org.codehaus.jackson.map.JsonSerializer;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializerProvider;
 import org.codehaus.jackson.map.ser.CustomSerializerFactory;
-
+/**
+ * 控制返回json对象中日期类型的格式
+ */
 public class JsonDateObjectMapper extends ObjectMapper{
 	public JsonDateObjectMapper() {
 		CustomSerializerFactory factory = new CustomSerializerFactory();  

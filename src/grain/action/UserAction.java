@@ -49,7 +49,6 @@ public class UserAction {
 				if(inf==0){
 					return userService.insertUser(identity, phone, pwd);
 				}
-				
 			}
 		}
 		Msg msg=new Msg(inf);
@@ -90,6 +89,12 @@ public class UserAction {
 		return msg;
 	}
 	
+	@RequestMapping("/handleApply")
+	public @ResponseBody Msg handleApply(String t_id,String s_id)throws Exception{
+		int method=1;
+		return userService.updateContact(t_id, s_id, method);
+	}
+	
 	@RequestMapping("/givePraise")
 	public @ResponseBody Msg givePraise(Praise praise)throws Exception{
 		return userService.updatePraise(praise);
@@ -115,14 +120,22 @@ public class UserAction {
         HttpSession session = request.getSession(true);
         session.setAttribute("pic_code", verifyCode.toLowerCase());  
         //Éú³ÉÍ¼Æ¬  
-        int w = 110, h = 30;  
+        int w = 220, h = 60;  
         verifyCodeService.outputImage(w, h, response.getOutputStream(), verifyCode);  
     }
 	
 	@RequestMapping("/getSmsCode")
-	public @ResponseBody Msg getSmsCode(String code,String phone,HttpServletRequest request){
-		int inf=2;
+	public @ResponseBody Msg getSmsCode(int method,String code,String phone,HttpServletRequest request){
+		int inf=-1;
 		inf=userService.checkVerifyCode(1, code, request);
+		if(inf==0){
+			try{
+				inf=userService.checkPhone(method, phone);
+			}
+			catch (Exception e){
+				inf=-1;
+			}
+		}
 		if(inf==0){
 			code=verifyCodeService.generateVerifyCode(4);
 			HttpSession session = request.getSession(true);

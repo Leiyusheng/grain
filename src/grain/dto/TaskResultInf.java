@@ -19,7 +19,7 @@ public class TaskResultInf {
 	
 	public TaskResultInf(Task task,TaskResult taskResult) {
 		this.task_res_id = taskResult.getTask_result_id();
-		this.task_name = taskResult.getTask_name();
+		this.task_name = task.getTask_name();
 		this.t_name = task.getTeacher_name();
 		this.s_date = task.getStart_date();
 		this.e_date = task.getEnd_date();

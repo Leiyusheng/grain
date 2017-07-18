@@ -11,10 +11,11 @@ public class TaskStuSimpleInf {
 	private int level;
 	private String info;
 	private int practice_time;
+	private int status;
 	
 	public TaskStuSimpleInf() {}
 	
-	public TaskStuSimpleInf(Task task, int practice_time) {
+	public TaskStuSimpleInf(Task task, int practice_time, int status) {
 		this.t_id = task.getTeacher_id();
 		this.t_name = task.getTeacher_name();
 		this.task_logo = task.getTask_logo();
@@ -23,6 +24,7 @@ public class TaskStuSimpleInf {
 		this.level = task.getDifficulty_level();
 		this.info = task.getTask_info();
 		this.practice_time = practice_time;
+		this.status = status;
 	}
 
 	public String getT_id() {
@@ -73,11 +75,18 @@ public class TaskStuSimpleInf {
 	public void setPractice_time(int practice_time) {
 		this.practice_time = practice_time;
 	}
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
 	@Override
 	public String toString() {
-		return "TaskSimpleInf [t_id=" + t_id + ", t_name=" + t_name + ", task_logo=" + task_logo + ", task_id="
-				+ task_id + ", task_name=" + task_name + ", level=" + level + ", info=" + info 
-				+ ", practice_time=" + practice_time + "]";
+		return "TaskStuSimpleInf [t_id=" + t_id + ", t_name=" + t_name + ", task_logo=" + task_logo + ", task_id="
+				+ task_id + ", task_name=" + task_name + ", level=" + level + ", info=" + info + ", practice_time="
+				+ practice_time + ", status=" + status + "]";
 	}
 	
 }

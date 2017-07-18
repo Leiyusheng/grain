@@ -14,6 +14,7 @@ public class TaskResult implements java.io.Serializable{
 	private String task_id;
 	private String task_name;
 	private String task_logo;
+	private String teacher_id;
 	private int practice_time;
 	private float self_score;
 	private String finish_photo;
@@ -22,14 +23,15 @@ public class TaskResult implements java.io.Serializable{
 	private int praise_count;
 	private int praise_status;
 	private int status;
+	private float tch_score;
+	private String tch_comment;
 	
 	public TaskResult() {}
 
-	public TaskResult(String task_result_id, String student_id, String task_id, String task_name) {
+	public TaskResult(String task_result_id, String student_id, String task_id) {
 		this.task_result_id = task_result_id;
 		this.student_id = student_id;
 		this.task_id = task_id;
-		this.task_name = task_name;
 	}
 	
 	public void setBasicInf(int practice_time, float self_score) {
@@ -98,6 +100,14 @@ public class TaskResult implements java.io.Serializable{
 		this.task_logo = task_logo;
 	}
 
+	public String getTeacher_id() {
+		return teacher_id;
+	}
+
+	public void setTeacher_id(String teacher_id) {
+		this.teacher_id = teacher_id;
+	}
+
 	public int getPractice_time() {
 		return practice_time;
 	}
@@ -162,13 +172,31 @@ public class TaskResult implements java.io.Serializable{
 		this.status = status;
 	}
 
+	public float getTch_score() {
+		return tch_score;
+	}
+
+	public void setTch_score(float tch_score) {
+		this.tch_score = tch_score;
+	}
+
+	public String getTch_comment() {
+		return tch_comment;
+	}
+
+	public void setTch_comment(String tch_comment) {
+		this.tch_comment = tch_comment;
+	}
+
 	@Override
 	public String toString() {
 		return "TaskResult [task_result_id=" + task_result_id + ", student_id=" + student_id + ", student_name="
 				+ student_name + ", head_logo=" + head_logo + ", task_id=" + task_id + ", task_name=" + task_name
-				+ ", task_logo=" + task_logo + ", practice_time=" + practice_time + ", self_score=" + self_score
-				+ ", finish_photo=" + finish_photo + ", comments=" + comments + ", publish_time=" + publish_time
-				+ ", praise_count=" + praise_count + ", praise_status=" + praise_status + ", status=" + status + "]";
+				+ ", task_logo=" + task_logo + ", teacher_id=" + teacher_id + ", practice_time=" + practice_time
+				+ ", self_score=" + self_score + ", finish_photo=" + finish_photo + ", comments=" + comments
+				+ ", publish_time=" + publish_time + ", praise_count=" + praise_count + ", praise_status="
+				+ praise_status + ", status=" + status + ", tch_score=" + tch_score + ", tch_comment=" + tch_comment
+				+ "]";
 	}
 	
 }

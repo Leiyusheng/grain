@@ -26,14 +26,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
      <!-- 查找今天某任务已发表结果数 -->
      <select id="findTaskResultNumById" parameterType="String"
          resultType="int">
-         SELECT count(*) FROM taskresult WHERE task_id=#{value} 
+         SELECT count(*) FROM taskstudent,taskresult 
+         WHERE taskstudent.student_id=taskresult.student_id 
+         AND taskstudent.task_id=taskresult.task_id 
+         AND taskresult.task_id=#{value} 
          AND TO_DAYS(publish_time)=TO_DAYS(NOW()) AND status=1
      </select>
      
      <insert id="insertTaskResult" parameterType="taskResult">
          INSERT INTO 
-         taskresult(task_result_id,student_id,task_id,task_name) 
-         VALUES(#{task_result_id},#{student_id},#{task_id},#{task_name})
+         taskresult(task_result_id,student_id,task_id) 
+         VALUES(#{task_result_id},#{student_id},#{task_id})
      </insert>
      
      <update id="updateTaskResult" parameterType="taskResult">
@@ -60,7 +63,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
      
      <select id="findTaskResultByDate" resultType="taskResult">
          SELECT * FROM taskresult 
-         WHERE task_id=#{task_id} AND student_id=#{s_id} 
+         WHERE task_id=#{task_id} AND student_id=#{s_id} AND `status`=1
          ORDER BY publish_time
      </select>
      

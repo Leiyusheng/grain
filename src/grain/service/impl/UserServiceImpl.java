@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
+import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.ServletContext;
@@ -19,6 +20,7 @@ import grain.dao.mapper.BoardMapper;
 import grain.dao.mapper.CtctMapper;
 import grain.dao.mapper.GrpMapper;
 import grain.dao.mapper.StuMapper;
+import grain.dao.mapper.TaskMapper;
 import grain.dao.mapper.TaskResultMapper;
 import grain.dao.mapper.TchMapper;
 import grain.dto.MsgId;
@@ -27,6 +29,7 @@ import grain.dto.Msg;
 import grain.po.Group;
 import grain.po.Praise;
 import grain.po.Student;
+import grain.po.Task;
 import grain.po.Teacher;
 import grain.service.ImgCompressService;
 import grain.service.UserService;
@@ -45,11 +48,23 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private GrpMapper grpMapper;
 	@Autowired
+	private TaskMapper taskMapper;
+	@Autowired
 	private TaskResultMapper taskResultMapper;
 	@Autowired
 	private BoardMapper boardMapper;
 	@Autowired
 	private ImgCompressService imgCompressService;
+	
+	private final String rootPath;//tomcat根目录名
+	
+	public UserServiceImpl() {
+		this.rootPath = "apache-tomcat";
+	}
+	public UserServiceImpl(String rootPath) {
+		this.rootPath = rootPath;
+	}
+	
 	//MD5加密
 	public String EncoderByMd5(String s) throws Exception{ 
 	 	//获得MD5摘要算法的 MessageDigest 对象  
@@ -108,6 +123,41 @@ public class UserServiceImpl implements UserService {
 		MsgId loginMsg=new MsgId(status,id);
 		return loginMsg;
 	}
+	//验证电话是否有效
+	public int checkPhone(int method, String phone) throws Exception {
+		int status=3;
+		Teacher teacher=null;
+		Student student=null;
+		switch (method) {
+		case 1:
+			teacher=tchMapper.findTchByPhone(phone);
+			if(teacher==null){
+				status=0;
+			}
+			break;
+		case 2:
+			student=stuMapper.findStuByPhone(phone);
+			if(student==null){
+				status=0;
+			}
+			break;
+		case 3:
+			teacher=tchMapper.findTchByPhone(phone);
+			if(teacher!=null){
+				status=0;
+			}
+			break;
+		case 4:
+			student=stuMapper.findStuByPhone(phone);
+			if(student!=null){
+				status=0;
+			}
+			break;
+		default:
+			break;
+		}
+		return status;
+	}
 	//注册
 	@Override
 	public Msg insertUser(int identity, String phone, String pwd) throws Exception {
@@ -117,7 +167,7 @@ public class UserServiceImpl implements UserService {
 			if(teacher==null){
 				String s=UUID.randomUUID().toString();
 				String id=s.substring(0,8)+s.substring(9,13)+s.substring(14,18)+s.substring(19,23)+s.substring(24);
-				String name="谷粒用户"+phone.substring(0, 3)+"***"+phone.substring(7);
+				String name="谷粒"+phone.substring(7);
 				teacher=new Teacher(id,name,phone,EncoderByMd5(pwd));
 				Group group=new Group(id,id);
 				try {
@@ -138,7 +188,7 @@ public class UserServiceImpl implements UserService {
 			if(student==null){
 				String s=UUID.randomUUID().toString();
 				String id=s.substring(0,8)+s.substring(9,13)+s.substring(14,18)+s.substring(19,23)+s.substring(24);
-				String name="谷粒用户"+phone.substring(0, 3)+"***"+phone.substring(7);
+				String name="谷粒"+phone.substring(7);
 				student=new Student(id,name,phone,EncoderByMd5(pwd));
 				try {
 					stuMapper.insertStu(student);
@@ -237,6 +287,18 @@ public class UserServiceImpl implements UserService {
 			else if(method==2){
 				tchMapper.updateTchStuCount(0, t_id);
 				grpMapper.updateStuCount(t_id, s_id);
+				List<Task> tList=taskMapper.findStuTaskByTch(t_id, s_id);
+				for(int i=0;i<tList.size();i++){//移除该老师发给该学生的任务记录
+					Task task=tList.get(i);
+					if(task.getStatus()<2){//只移除还未结束的
+						try {
+							taskMapper.deleteTaskStu(task.getTask_id(), s_id);
+							taskMapper.updateTaskStuCount(0, task.getTask_id());
+						} catch (Exception e) {
+							throw e;
+						}
+					}
+				}
 				grpMapper.deleteStu(t_id, s_id);
 				status=0;
 			}
@@ -364,19 +426,20 @@ public class UserServiceImpl implements UserService {
 				default:
 					break;
 				}
+				String path0 = servletContext.getRealPath("WEB-INF");
+				int index = path0.indexOf(rootPath);//查找tomcat根目录
 				if(method>3){
-					String path = servletContext.getRealPath("pic") + catalog + url;
+					String path = path0.substring(0, index) + "pic" + catalog + url;//替换为图片资源目录
 					FileCopyUtils.copy(file.getInputStream(), new FileOutputStream(path));
 					url = "pic" + catalog + url;
 				}
 				else{
-					String path = servletContext.getRealPath("pic") + catalog + "original" + url;
+					String path = path0.substring(0, index) + "pic" + catalog + "original" + url;//替换为图片资源目录
 	                FileCopyUtils.copy(file.getInputStream(), new FileOutputStream(path));
-	                String thumbnail = servletContext.getRealPath("pic") + catalog + "thumbnail" + url;
+	                String thumbnail = path0.substring(0, index) + "pic" + catalog + "thumbnail" + url;//替换为图片资源目录
 	                imgCompressService.imgCompress(path, thumbnail,method);
 	                url = "pic" + catalog + "thumbnail" + url;
 				}
-                
                 MsgUrl msgUrl=new MsgUrl(0,url);
                 return msgUrl;
             } catch (IOException e) {

@@ -8,11 +8,14 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.springframework.stereotype.Service;
+
 import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
 import grain.service.ImgCompressService;
 
+@Service
 public class ImgCompressServiceImpl implements ImgCompressService {
 
 	private Image img;

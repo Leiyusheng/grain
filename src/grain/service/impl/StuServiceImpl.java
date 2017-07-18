@@ -11,8 +11,10 @@ import grain.dao.mapper.StuMapper;
 import grain.dao.mapper.TchMapper;
 import grain.dto.ApplyInf;
 import grain.dto.ApplyList;
+import grain.dto.CheckSearchInf;
 import grain.dto.CheckStuInf;
 import grain.dto.Msg;
+import grain.dto.SearchInf;
 import grain.dto.StudentInf;
 import grain.dto.TchSimpleInf;
 import grain.dto.TeacherList;
@@ -29,6 +31,32 @@ public class StuServiceImpl implements StuService {
 	TchMapper tchMapper;
 	@Autowired
 	CtctMapper ctctMapper;
+	//查找学生
+	@Override
+	public CheckSearchInf findStuByPhone(String t_id, String phone) throws Exception {
+		int status=3;
+		SearchInf sInf;
+		Student student=stuMapper.findStuByPhone(phone);
+		if(student==null){
+			status=1;
+			sInf=new SearchInf();
+		}
+		else{
+			Contact contact=ctctMapper.findContactByStuPhone(phone, t_id);
+			if(contact==null){
+				status=0;
+			}
+			else if(contact.getStatus()==1){//学生已同意
+				status=2;
+			}
+			else{
+				status=0;
+			}
+			sInf=new SearchInf(student);
+		}
+		CheckSearchInf cSearchInf=new CheckSearchInf(status, sInf);
+		return cSearchInf;
+	}
 	//查看学生信息
 	@Override
 	public CheckStuInf findStuInf(String id) throws Exception {
@@ -260,9 +288,8 @@ public class StuServiceImpl implements StuService {
 		}
 		else{
 			try {
-				int method=0;
-				ctctMapper.updateContact(method, t_id, s_id);
-				ctctMapper.updateShowStatus(method, t_id, s_id);
+				ctctMapper.updateContact(0, t_id, s_id);
+				ctctMapper.updateShowStatus(0, t_id, s_id);
 				ctctMapper.updateContactTime(info, t_id, s_id);
 				status=0;
 			} catch (Exception e) {
@@ -287,8 +314,8 @@ public class StuServiceImpl implements StuService {
 	}
 	//查看已申请列表
 	@Override
-	public ApplyList findAppliedList(String s_id) throws Exception {
-		List<Contact> contacts=ctctMapper.findAppliedListById(s_id);
+	public ApplyList findApplyList(String s_id) throws Exception {
+		List<Contact> contacts=ctctMapper.findTchApplyListById(s_id);
 		ApplyList aList=new ApplyList();
 		int identity=2;
 		for(int i=0;i<contacts.size();i++){
@@ -301,8 +328,8 @@ public class StuServiceImpl implements StuService {
 		return aList;
 	}
 	//删除申请
-	@Override
-	public Msg deleteApplied(String t_id, String s_id) throws Exception {
+	@Override 
+	public Msg deleteApply(String t_id, String s_id) throws Exception {
 		int status=1;
 		try {
 			Contact contact=ctctMapper.findContactById(t_id, s_id);

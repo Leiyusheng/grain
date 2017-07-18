@@ -22,22 +22,28 @@ public class GrpServiceImpl implements GrpService {
 	private CtctMapper ctctMapper;
 	//修改分组名
 	@Override
-	public Msg updateGrpName(String g_id, String g_name) throws Exception {
-		int status=1;
-		Group group=grpMapper.findDefaultGroupById(g_id);//找出该id对应的分组
-		if(!group.getGroup_id().equals(group.getTeacher_id())){
-			try {
-				status=grpMapper.updateGroupName(g_id, g_name);
-				if(status==0){
-					status=1;
+	public Msg updateGrpName(String t_id,String g_id, String g_name) throws Exception {
+		int status=2;
+		Group group=grpMapper.findGroupByName(t_id,g_name);//判断分组名是否重复
+		if(group==null){
+			group=grpMapper.findDefaultGroupById(g_id);//找出该id对应的分组
+			if(!group.getGroup_id().equals(group.getTeacher_id())){
+				try {
+					status=grpMapper.updateGroupName(g_id, g_name);
+					if(status==0){
+						status=2;
+					}
+					else{
+						status=0;
+					}
+				} catch (Exception e) {
+					status=2;
+					throw e;
 				}
-				else{
-					status=0;
-				}
-			} catch (Exception e) {
-				status=1;
-				throw e;
 			}
+		}
+		else{
+			status=1;
 		}
 		Msg msg=new Msg(status);
 		return msg;
@@ -108,9 +114,9 @@ public class GrpServiceImpl implements GrpService {
 		List<Student> students=grpMapper.findGroupStu(g_id);
 		StudentList sList=new StudentList();
 		for(int i=0;i<students.size();i++){
-			Student stu=students.get(i);
-			StuSimpleInf sInfo=new StuSimpleInf(stu);
-			sList.addStuInfo(sInfo);
+		    Student stu=students.get(i);
+		    StuSimpleInf sInfo=new StuSimpleInf(stu);
+		    sList.addStuInfo(sInfo);
 		}
 		return sList;
 	}

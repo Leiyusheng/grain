@@ -29,14 +29,24 @@ import grain.service.VerifyCodeService;
 public class VerifyCodeServiceImpl implements VerifyCodeService{  
   
     //使用到Algerian字体，系统里没有的话需要安装字体，字体只显示大写，去掉了1,0,i,o几个容易混淆的字符  
-    public static final String VERIFY_CODES = "23456789";  
+    public final String VERIFY_CODES ;
     private static Random random = new Random();  
-    private static String apikey = "c76ca21acceca36b62cf147533fc91b3";
+    private final String apikey ;//
   
+    public VerifyCodeServiceImpl() {
+		this.VERIFY_CODES = "123456789"; 
+		this.apikey = "c76ca21acceca36b62cf147533fc91b3";
+	}
+    
+    public VerifyCodeServiceImpl(String VERIFY_CODES,String apikey) {
+		this.VERIFY_CODES = VERIFY_CODES;
+		this.apikey = apikey;
+	}
+    
     //发送短信验证码
     @Override
     public int sendSmsCode(String phone, String code) {
-    	int inf=2;
+    	int inf=-1;
     	String text="您的验证码是"+code+"。如非本人操作，请忽略本短信";
 		YunpianRestClient client = new YunpianRestClient(apikey);//用apikey生成client,可作为全局静态变量
 	    SmsOperator smsOperator = client.getSmsOperator();//获取所需操作类
@@ -51,25 +61,14 @@ public class VerifyCodeServiceImpl implements VerifyCodeService{
 	    	int i2=s.indexOf("\"msg\"");
 	    	inf=Integer.valueOf(s.substring(i1+7, i2-1)).intValue();
 	    }
-	    
 	    return inf;   
     }
   
-    /** 
-     * 使用系统默认字符源生成验证码 
-     * @param verifySize    验证码长度 
-     * @return 
-     */  
     @Override
     public String generateVerifyCode(int verifySize){  
         return generateVerifyCode(verifySize, VERIFY_CODES);  
     }  
-    /** 
-     * 使用指定源生成验证码 
-     * @param verifySize    验证码长度 
-     * @param sources   验证码字符源 
-     * @return 
-     */  
+
     @Override
     public String generateVerifyCode(int verifySize, String sources){  
         if(sources == null || sources.length() == 0){  
@@ -83,32 +82,14 @@ public class VerifyCodeServiceImpl implements VerifyCodeService{
         }  
         return verifyCode.toString();  
     }  
-      
-    /** 
-     * 生成随机验证码文件,并返回验证码值 
-     * @param w 
-     * @param h 
-     * @param outputFile 
-     * @param verifySize 
-     * @return 
-     * @throws IOException 
-     */  
+       
     @Override
     public String outputVerifyImage(int w, int h, File outputFile, int verifySize) throws IOException{  
         String verifyCode = generateVerifyCode(verifySize);  
         outputImage(w, h, outputFile, verifyCode);  
         return verifyCode;  
     }  
-      
-    /** 
-     * 输出随机验证码图片流,并返回验证码值 
-     * @param w 
-     * @param h 
-     * @param os 
-     * @param verifySize 
-     * @return 
-     * @throws IOException 
-     */  
+       
     @Override
     public String outputVerifyImage(int w, int h, OutputStream os, int verifySize) throws IOException{  
         String verifyCode = generateVerifyCode(verifySize);  
@@ -116,14 +97,6 @@ public class VerifyCodeServiceImpl implements VerifyCodeService{
         return verifyCode;  
     }  
       
-    /** 
-     * 生成指定验证码图像文件 
-     * @param w 
-     * @param h 
-     * @param outputFile 
-     * @param code 
-     * @throws IOException 
-     */  
     @Override
     public void outputImage(int w, int h, File outputFile, String code) throws IOException{  
         if(outputFile == null){  
@@ -142,15 +115,7 @@ public class VerifyCodeServiceImpl implements VerifyCodeService{
             throw e;  
         }  
     }  
-      
-    /** 
-     * 输出指定验证码图片流 
-     * @param w 
-     * @param h 
-     * @param os 
-     * @param code 
-     * @throws IOException 
-     */  
+       
     @Override
     public void outputImage(int w, int h, OutputStream os, String code) throws IOException{  
         int verifySize = code.length();  

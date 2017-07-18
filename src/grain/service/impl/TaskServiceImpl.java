@@ -1,6 +1,8 @@
 package grain.service.impl;
 
 import java.sql.Date;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,6 +11,7 @@ import org.springframework.dao.DuplicateKeyException;
 
 import grain.dao.mapper.BoardMapper;
 import grain.dao.mapper.CtctMapper;
+import grain.dao.mapper.StuMapper;
 import grain.dao.mapper.TaskMapper;
 import grain.dao.mapper.TaskResultMapper;
 import grain.dto.CheckTaskResultInf;
@@ -40,13 +43,15 @@ import grain.service.TaskService;
 
 public class TaskServiceImpl implements TaskService {
 	@Autowired
-	TaskMapper taskMapper;
+	private TaskMapper taskMapper;
 	@Autowired
-	CtctMapper ctctMapper;
+	private StuMapper stuMapper;
 	@Autowired
-	TaskResultMapper taskResultMapper;
+	private CtctMapper ctctMapper;
 	@Autowired
-	BoardMapper boardMapper;
+	private TaskResultMapper taskResultMapper;
+	@Autowired
+	private BoardMapper boardMapper;
 	//老师查看任务信息
 	@Override
 	public CheckTaskTchInf findTaskTchInf(String task_id) throws Exception {
@@ -251,11 +256,13 @@ public class TaskServiceImpl implements TaskService {
 		for(int i=0;i<tasks.size();i++){
 			Task task=tasks.get(i);
 			int practice_time=0;//获取完成时间
+			int status=0;//未发表
 			TaskResult result=taskResultMapper.findTaskResultByStu(task.getTask_id(), s_id);
 			if(result!=null){
 				practice_time=result.getPractice_time();
+				status=result.getStatus();
 			}
-			TaskStuSimpleInf sInf=new TaskStuSimpleInf(task, practice_time);
+			TaskStuSimpleInf sInf=new TaskStuSimpleInf(task, practice_time,status);
 			tList.addTaskInf(sInf);
 		}
 		return tList;
@@ -268,11 +275,13 @@ public class TaskServiceImpl implements TaskService {
 		for(int i=0;i<tasks.size();i++){
 			Task task=tasks.get(i);
 			int practice_time=0;//获取完成时间
+			int status=0;//未发表
 			TaskResult result=taskResultMapper.findTaskResultByStu(task.getTask_id(), s_id);
 			if(result!=null){
 				practice_time=result.getPractice_time();
+				status=result.getStatus();
 			}
-			TaskStuSimpleInf sInf=new TaskStuSimpleInf(task, practice_time);
+			TaskStuSimpleInf sInf=new TaskStuSimpleInf(task, practice_time,status);
 			tList.addTaskInf(sInf);
 		}
 		return tList;
@@ -344,7 +353,7 @@ public class TaskServiceImpl implements TaskService {
 			if(taskResult==null){
 				String s=UUID.randomUUID().toString();
 				String id=s.substring(0,8)+s.substring(9,13)+s.substring(14,18)+s.substring(19,23)+s.substring(24);
-				taskResult=new TaskResult(id,s_id,task_id,task.getTask_name());
+				taskResult=new TaskResult(id,s_id,task_id);
 				try {
 					taskResultMapper.insertTaskResult(taskResult);
 					status=0;
@@ -434,9 +443,10 @@ public class TaskServiceImpl implements TaskService {
 		int status=1;
 		TaskResultList rList;
 		Task task=taskMapper.findTaskByTaskId(task_id);
-		if(task!=null&&task.getStatus()!=3){
+		Student stu=stuMapper.findStuById(s_id);
+		if(task!=null&&task.getStatus()!=3&&stu!=null){
 			status=0;
-			rList=new TaskResultList(status,task.getStart_date(),task.getEnd_date(),task.getStatus());
+			rList=new TaskResultList(status,task,stu);
 			List<TaskResult> taskResults=taskResultMapper.findTaskResultByDate(task_id, s_id);
 			for(int i=0;i<taskResults.size();i++){
 				TaskResult taskResult=taskResults.get(i);
@@ -453,6 +463,19 @@ public class TaskServiceImpl implements TaskService {
 	@Override
 	public TaskResultTodayList findTaskTodayList(String task_id) throws Exception {
 		List<TaskResultTotalInf> totalInfs=taskResultMapper.findTaskResultByTch(task_id);
+		Collections.sort(totalInfs, new Comparator<TaskResultTotalInf>() {
+			@Override
+			public int compare(TaskResultTotalInf o1, TaskResultTotalInf o2) {
+				int flag=new Integer(o2.getTotal_time()).compareTo(new Integer(o1.getTotal_time()));//总完成时间比较
+				if(flag==0){
+					flag=new Integer(o2.getToday_time()).compareTo(new Integer(o1.getToday_time()));//今日完成时间比较
+				}
+				if(flag==0){
+					flag=new Float(o2.getSelf_score()).compareTo(new Float(o1.getSelf_score()));//个人评分比较
+				}
+				return flag;
+			}
+		});
 		TaskResultTodayList todayList=new TaskResultTodayList(totalInfs);
 		return todayList;
 	}
@@ -463,11 +486,85 @@ public class TaskServiceImpl implements TaskService {
 		TaskBoard taskBoard=new TaskBoard(rList);
 		return taskBoard;
 	}
+	//老师查看是否有新结果
+	@Override
+	public Msg findTchNewResult(String t_id, String last_time) throws Exception {
+		int status=1;
+		TaskResult taskResult=boardMapper.findNewResultForTch(t_id, last_time);
+		if(taskResult==null){
+			status=0;
+		}
+		Msg msg=new Msg(status);
+		return msg;
+	}
 	//学生查看任务板
 	@Override
 	public TaskBoard findBoardForStu(String s_id, String last_time) throws Exception {
 		List<TaskResult> rList=boardMapper.findResultForStu(s_id, last_time);
 		TaskBoard taskBoard=new TaskBoard(rList);
 		return taskBoard;
+	}
+	//学生查看是否有新结果
+	@Override
+	public Msg findStuNewResult(String s_id, String last_time) throws Exception {
+		int status=1;
+		TaskResult taskResult=boardMapper.findNewResultForStu(s_id, last_time);
+		if(taskResult==null){
+			status=0;
+		}
+		Msg msg=new Msg(status);
+		return msg;
+	}
+	//更新结果老师评分
+	@Override
+	public Msg updateResultTchScore(String id,String t_id,float score) throws Exception {
+		int status=2;
+		try {
+			TaskResult result=taskResultMapper.findTaskResultById(id);
+			Task task=taskMapper.findTaskByTaskId(result.getTask_id());
+			if(!t_id.equals(task.getTeacher_id())){
+				status=1;
+				return new Msg(status);
+			}
+			result.setTch_score(score);
+			status=boardMapper.updateResultTchScore(result);
+			if(status==0){
+				status=2;
+			}
+			else{
+				status=0;
+			}
+		} catch (Exception e) {
+			status=2;
+			throw e;
+		}
+		Msg msg=new Msg(status);
+		return msg;
+	}
+	//更新结果老师评论
+	@Override
+	public Msg updateResultTchComment(String id,String t_id,String comment) throws Exception {
+		int status=2;
+		try {
+			TaskResult result=taskResultMapper.findTaskResultById(id);
+			Task task=taskMapper.findTaskByTaskId(result.getTask_id());
+			if(!t_id.equals(task.getTeacher_id())){
+				status=1;
+				return new Msg(status);
+			}
+			result.setTch_comment(comment);
+			status=boardMapper.updateResultTchComment(result);
+			if(status==0){
+				status=2;
+			}
+			else{
+				status=0;
+			}
+		} catch (Exception e) {
+			status=2;
+			throw e;
+		}
+		Msg msg=new Msg(status);
+		return msg;
 	}
 }

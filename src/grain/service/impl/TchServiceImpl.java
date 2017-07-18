@@ -9,18 +9,20 @@ import org.springframework.stereotype.Service;
 
 import grain.dao.mapper.CtctMapper;
 import grain.dao.mapper.GrpMapper;
+import grain.dao.mapper.StuMapper;
 import grain.dao.mapper.TchMapper;
 import grain.dto.ApplyInf;
 import grain.dto.ApplyList;
 import grain.dto.CheckTchInf;
-import grain.dto.CheckTchSearchInf;
+import grain.dto.CheckSearchInf;
 import grain.dto.GroupInf;
 import grain.dto.GroupList;
 import grain.dto.Msg;
-import grain.dto.TchSearchInf;
+import grain.dto.SearchInf;
 import grain.dto.TeacherInf;
 import grain.po.Contact;
 import grain.po.Group;
+import grain.po.Student;
 import grain.po.Teacher;
 import grain.service.TchService;
 
@@ -30,31 +32,36 @@ public class TchServiceImpl implements TchService {
 	@Autowired
 	private TchMapper tchMapper;
 	@Autowired
+	private StuMapper stuMapper;
+	@Autowired
 	private CtctMapper ctctMapper;
 	@Autowired
 	private GrpMapper grpMapper;
 	//查找老师
 	@Override
-	public CheckTchSearchInf findTchByPhone(String s_id,String phone) throws Exception {
-		int status=2;
-		TchSearchInf tInf;
+	public CheckSearchInf findTchByPhone(String s_id,String phone) throws Exception {
+		int status=3;
+		SearchInf tInf;
 		Teacher teacher=tchMapper.findTchByPhone(phone);
 		if(teacher==null){
 			status=1;
-			tInf=new TchSearchInf();
+			tInf=new SearchInf();
 		}
 		else{
-			Contact contact=ctctMapper.findContactByPhone(phone, s_id);
+			Contact contact=ctctMapper.findContactByTchPhone(phone, s_id);
 			if(contact==null){
 				status=0;
 			}
 			else if(contact.getStatus()==1){//老师已同意
 				status=2;
 			}
-			tInf=new TchSearchInf(teacher);
+			else{
+				status=0;
+			}
+			tInf=new SearchInf(teacher);
 		}
-		CheckTchSearchInf cTchSearchInf=new CheckTchSearchInf(status, tInf);
-		return cTchSearchInf;
+		CheckSearchInf cSearchInf=new CheckSearchInf(status, tInf);
+		return cSearchInf;
 	}
 	//查看老师信息
 	@Override
@@ -243,7 +250,7 @@ public class TchServiceImpl implements TchService {
 	//查看申请列表
 	@Override
 	public ApplyList findApplyList(String t_id) throws Exception {
-		List<Contact> contacts=ctctMapper.findApplyListById(t_id);
+		List<Contact> contacts=ctctMapper.findStuApplyListById(t_id);
 		ApplyList aList=new ApplyList();
 		int identity=1;
 		for(int i=0;i<contacts.size();i++){
@@ -276,6 +283,54 @@ public class TchServiceImpl implements TchService {
 		Msg msg=new Msg(status);
 		return msg;
 	}
+	//添加学生
+	@Override
+	public Msg updateStuApply(String s_id, String t_id, String info) throws Exception {
+		Contact contact=ctctMapper.findContactById(t_id, s_id);
+		int status=3;
+		if(contact==null){//对应关系不存在
+			Student student=stuMapper.findStuById(s_id);
+			if(student==null){
+				status=2;//对应学生不存在
+			}
+			else{
+				contact=new Contact(t_id,s_id,3,0,info);
+				try {
+					ctctMapper.insertContact(contact);
+					status=0;
+				} catch (Exception e) {
+					throw e;
+				}
+			}
+		}
+		else if(contact.getStatus()==1){
+			status=1;//学生已存在
+		}
+		else{
+			try {
+				ctctMapper.updateContact(3, t_id, s_id);
+				ctctMapper.updateShowStatus(0, t_id, s_id);
+				ctctMapper.updateContactTime(info, t_id, s_id);
+				status=0;
+			} catch (Exception e) {
+				status=3;
+				throw e;
+			}
+		}
+		Msg msg=new Msg(status);
+		return msg;
+	}
+	//查看是否有新的学生
+	@Override
+	public Msg findWhetherStuApply(String t_id) throws Exception {
+		int status=1;
+		Contact contact=ctctMapper.findTchNewContact(t_id);
+		if(contact==null){
+			status=0;
+		}
+		Msg msg=new Msg(status);
+		return msg;
+	}
 	//查看分组
 	@Override
 	public GroupList findGroupListById(String t_id) throws Exception {
@@ -295,7 +350,7 @@ public class TchServiceImpl implements TchService {
 	@Override
 	public Msg insertGroup(String t_id, String grp_name) throws Exception {
 		int status=2;
-		Group group=grpMapper.findGroupByName(t_id,grp_name);
+		Group group=grpMapper.findGroupByName(t_id,grp_name);//判断分组名是否重复
 		if(group==null){
 			String s=UUID.randomUUID().toString();
 			String id=s.substring(0,8)+s.substring(9,13)+s.substring(14,18)+s.substring(19,23)+s.substring(24);

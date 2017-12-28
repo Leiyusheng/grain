@@ -11,80 +11,80 @@ import org.springframework.web.multipart.MultipartFile;
 import grain.dto.Msg;
 
 public interface UserService {
-	/**
-	 * ÓÃ»§µÇÂ¼
-	 * @param identity ÓÃ»§Éí·İ£º1ÀÏÊ¦£¬2Ñ§Éú
-	 * @param phone µç»°
-	 * @param pwd ÃÜÂë
-	 * @return MsgId ·µ»ØÏûÏ¢£º0³É¹¦£¬1ÃÜÂë´íÎó£¬2ÎŞ´ËÓÃ»§£»ÓÃ»§id
-	 * @throws Exception
-	 */
-	public MsgId login(int identity,String phone,String pwd)throws Exception;
-	/**
-	 * ¼ì²âµç»°ºÅÂëÊÇ·ñÓĞĞ§
-	 * @param method ·½Ê½£º1ÀÏÊ¦×¢²á£¬2Ñ§Éú×¢²á£¬3ÀÏÊ¦ĞŞ¸ÄÃÜÂë£¬4Ñ§ÉúĞŞ¸ÄÃÜÂë
-	 * @param phone µç»°
-	 * @return 0ÓĞĞ§£¬3ÎŞĞ§
-	 * @throws Exception
-	 */
-	public int checkPhone(int method,String phone)throws Exception;
-	/**
-	 * ²åÈëÓÃ»§
-	 * @param identity ÓÃ»§Éí·İ£º1ÀÏÊ¦£¬2Ñ§Éú
-	 * @param phone µç»°
-	 * @param pwd ÃÜÂë
-	 * @return Msg ·µ»ØÏûÏ¢£º0×¢²á³É¹¦£¬2ÓÃ»§´æÔÚ£¬3ÆäËû
-	 * @throws Exception
-	 */
-	public Msg insertUser(int identity,String phone,String pwd)throws Exception;
-	/**
-	 * ĞŞ¸ÄÃÜÂë
-	 * @param method ĞŞ¸Ä·½Ê½£º1´«µç»°£¬2´«id
-	 * @param identity ÓÃ»§Éí·İ£º1ÀÏÊ¦£¬2Ñ§Éú
-	 * @param phone µç»°/id
-	 * @param new_pwd ĞÂÃÜÂë
-	 * @return Msg ·µ»ØÏûÏ¢£º0×¢²á³É¹¦£¬2ÓÃ»§´æÔÚ£¬3ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updatePwd(int method,int identity,String phone,String new_pwd)throws Exception;
-	/**
-	 * ¸üĞÂÊ¦Éú¹ØÏµ
-	 * @param t_id ÀÏÊ¦id
-	 * @param s_id Ñ§Éúid
-	 * @param method Ê¦Éú¹ØÏµ£º1Í¬Òâ£¬2É¾³ı
-	 * @return Msg ·µ»ØÏûÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateContact(String t_id,String s_id,int method)throws Exception;
-	/**
-	 * ¸üĞÂÔŞµÄ×´Ì¬
-	 * @param praise ÔŞĞÅÏ¢
-	 * @return Msg ·µ»ØÏûÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updatePraise(Praise praise)throws Exception;
-	/**
-	 * ²é¿´ÈÎÎñ°å±³¾°Í¼Æ¬
-	 * @param identity Éí·İ£º1ÀÏÊ¦£¬2Ñ§Éú
-	 * @param id ÓÃ»§id
-	 * @return MsgUrl ·µ»ØÏûÏ¢£º0³É¹¦£¬1ÆäËû£»Í¼Æ¬url
-	 * @throws Exception
-	 */
-	public MsgUrl checkBoardPic(int identity,String id)throws Exception;
-	/**
-	 * ¼ì²éÑéÖ¤Âë
-	 * @param way ·½Ê½£º1Í¼Æ¬ÑéÖ¤Âë£¬2¶ÌĞÅÑéÖ¤Âë
-	 * @param code ÑéÖ¤Âë
-	 * @param request
-	 * @return 0ÎªÑéÖ¤³É¹¦£¬1ÎªÍ¼Æ¬ÑéÖ¤´íÎó£¬4ÎªsessionÖĞÃ»ÓĞÍ¼Æ¬ÑéÖ¤Âë£¬5Îª¶ÌĞÅÑéÖ¤´íÎó£¬6ÎªsessionÖĞÃ»ÓĞ¶ÌĞÅÑéÖ¤Âë
-	 */
-	public int checkVerifyCode(int way,String code,HttpServletRequest request);
-	/**
-	 * ÉÏ´«Í¼Æ¬
-	 * @param method Í¼Æ¬ÀàĞÍ£º1ÎªÍ·Ïñ£¬2ÎªÈÎÎñÍ¼Æ¬£¬3Îª½á¹ûÍ¼Æ¬
-	 * @param file Í¼Æ¬ÎÄ¼ş
-	 * @return MsgUrl ·µ»ØÏûÏ¢£º0³É¹¦£¬1ÆäËû£»Í¼Æ¬url
-	 * @throws Exception
-	 */
-	public MsgUrl saveFile(int method, MultipartFile file)throws Exception;
+    /**
+     * ç”¨æˆ·ç™»å½•
+     * @param identity ç”¨æˆ·èº«ä»½ï¼š1è€å¸ˆï¼Œ2å­¦ç”Ÿ
+     * @param phone ç”µè¯
+     * @param pwd å¯†ç 
+     * @return MsgId è¿”å›æ¶ˆæ¯ï¼š0æˆåŠŸï¼Œ1å¯†ç é”™è¯¯ï¼Œ2æ— æ­¤ç”¨æˆ·ï¼›ç”¨æˆ·id
+     * @throws Exception
+     */
+    public MsgId login(int identity,String phone,String pwd)throws Exception;
+    /**
+     * æ£€æµ‹ç”µè¯å·ç æ˜¯å¦æœ‰æ•ˆ
+     * @param method æ–¹å¼ï¼š1è€å¸ˆæ³¨å†Œï¼Œ2å­¦ç”Ÿæ³¨å†Œï¼Œ3è€å¸ˆä¿®æ”¹å¯†ç ï¼Œ4å­¦ç”Ÿä¿®æ”¹å¯†ç 
+     * @param phone ç”µè¯
+     * @return 0æœ‰æ•ˆï¼Œ3æ— æ•ˆ
+     * @throws Exception
+     */
+    public int checkPhone(int method,String phone)throws Exception;
+    /**
+     * æ’å…¥ç”¨æˆ·
+     * @param identity ç”¨æˆ·èº«ä»½ï¼š1è€å¸ˆï¼Œ2å­¦ç”Ÿ
+     * @param phone ç”µè¯
+     * @param pwd å¯†ç 
+     * @return Msg è¿”å›æ¶ˆæ¯ï¼š0æ³¨å†ŒæˆåŠŸï¼Œ2ç”¨æˆ·å­˜åœ¨ï¼Œ3å…¶ä»–
+     * @throws Exception
+     */
+    public Msg insertUser(int identity,String phone,String pwd)throws Exception;
+    /**
+     * ä¿®æ”¹å¯†ç 
+     * @param method ä¿®æ”¹æ–¹å¼ï¼š1ä¼ ç”µè¯ï¼Œ2ä¼ id
+     * @param identity ç”¨æˆ·èº«ä»½ï¼š1è€å¸ˆï¼Œ2å­¦ç”Ÿ
+     * @param phone ç”µè¯/id
+     * @param new_pwd æ–°å¯†ç 
+     * @return Msg è¿”å›æ¶ˆæ¯ï¼š0æ³¨å†ŒæˆåŠŸï¼Œ2ç”¨æˆ·å­˜åœ¨ï¼Œ3å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updatePwd(int method,int identity,String phone,String new_pwd)throws Exception;
+    /**
+     * æ›´æ–°å¸ˆç”Ÿå…³ç³»
+     * @param t_id è€å¸ˆid
+     * @param s_id å­¦ç”Ÿid
+     * @param method å¸ˆç”Ÿå…³ç³»ï¼š1åŒæ„ï¼Œ2åˆ é™¤
+     * @return Msg è¿”å›æ¶ˆæ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateContact(String t_id,String s_id,int method)throws Exception;
+    /**
+     * æ›´æ–°èµçš„çŠ¶æ€
+     * @param praise èµä¿¡æ¯
+     * @return Msg è¿”å›æ¶ˆæ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updatePraise(Praise praise)throws Exception;
+    /**
+     * æŸ¥çœ‹ä»»åŠ¡æ¿èƒŒæ™¯å›¾ç‰‡
+     * @param identity èº«ä»½ï¼š1è€å¸ˆï¼Œ2å­¦ç”Ÿ
+     * @param id ç”¨æˆ·id
+     * @return MsgUrl è¿”å›æ¶ˆæ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–ï¼›å›¾ç‰‡url
+     * @throws Exception
+     */
+    public MsgUrl checkBoardPic(int identity,String id)throws Exception;
+    /**
+     * æ£€æŸ¥éªŒè¯ç 
+     * @param way æ–¹å¼ï¼š1å›¾ç‰‡éªŒè¯ç ï¼Œ2çŸ­ä¿¡éªŒè¯ç 
+     * @param code éªŒè¯ç 
+     * @param request
+     * @return 0ä¸ºéªŒè¯æˆåŠŸï¼Œ1ä¸ºå›¾ç‰‡éªŒè¯é”™è¯¯ï¼Œ4ä¸ºsessionä¸­æ²¡æœ‰å›¾ç‰‡éªŒè¯ç ï¼Œ5ä¸ºçŸ­ä¿¡éªŒè¯é”™è¯¯ï¼Œ6ä¸ºsessionä¸­æ²¡æœ‰çŸ­ä¿¡éªŒè¯ç 
+     */
+    public int checkVerifyCode(int way,String code,HttpServletRequest request);
+    /**
+     * ä¸Šä¼ å›¾ç‰‡
+     * @param method å›¾ç‰‡ç±»å‹ï¼š1ä¸ºå¤´åƒï¼Œ2ä¸ºä»»åŠ¡å›¾ç‰‡ï¼Œ3ä¸ºç»“æœå›¾ç‰‡
+     * @param file å›¾ç‰‡æ–‡ä»¶
+     * @return MsgUrl è¿”å›æ¶ˆæ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–ï¼›å›¾ç‰‡url
+     * @throws Exception
+     */
+    public MsgUrl saveFile(int method, MultipartFile file)throws Exception;
 }

@@ -8,6 +8,9 @@ public class TaskResultTotalInf {
 	private int total_time;
 	private int today_time;
 	private float self_score;
+	private int duration_day;
+	private int total_day;
+	private int clock_rank;
 	
 	public TaskResultTotalInf() {}
 
@@ -67,11 +70,36 @@ public class TaskResultTotalInf {
 		this.self_score = self_score;
 	}
 
-	@Override
-	public String toString() {
-		return "TaskResultTotalInf [student_id=" + student_id + ", student_name=" + student_name + ", head_logo="
-				+ head_logo + ", difficulty_level=" + difficulty_level + ", total_time=" + total_time + ", today_time="
-				+ today_time + ", self_score=" + self_score + "]";
-	}
+	public int getDuration_day() {
+        return duration_day;
+    }
+
+    public void setDuration_day(int duration_day) {
+        this.duration_day = duration_day;
+    }
+
+    public int getTotal_day() {
+        return total_day;
+    }
+
+    public void setTotal_day(int total_day) {
+        this.total_day = total_day;
+    }
+
+    public int getClock_rank() {
+        return clock_rank;
+    }
+
+    public void setClock_rank(int clock_rank) {
+        this.clock_rank = clock_rank;
+    }
+
+    @Override
+    public String toString() {
+        return "TaskResultTotalInf [student_id=" + student_id + ", student_name=" + student_name + ", head_logo="
+                + head_logo + ", difficulty_level=" + difficulty_level + ", total_time=" + total_time + ", today_time="
+                + today_time + ", self_score=" + self_score + ", duration_day=" + duration_day + ", total_day="
+                + total_day + ", clock_rank=" + clock_rank + "]";
+    }
 	
 }

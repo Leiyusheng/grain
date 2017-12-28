@@ -17,214 +17,214 @@ import grain.po.Task;
 import grain.po.TaskResult;
 
 public interface TaskService {
-	/**
-	 * ÀÏÊ¦²é¿´ÈÎÎñĞÅÏ¢
-	 * @param task_id ÈÎÎñid
-	 * @return CheckTaskTchInf ÈÎÎñĞÅÏ¢
-	 * @throws Exception
-	 */
-	public CheckTaskTchInf findTaskTchInf(String task_id)throws Exception;
-	/**
-	 * Ñ§Éú²é¿´ÈÎÎñĞÅÏ¢
-	 * @param task_id ÈÎÎñid
-	 * @param s_id Ñ§Éúid
-	 * @return CheckTaskStuInf ÈÎÎñĞÅÏ¢
-	 * @throws Exception
-	 */
-	public CheckTaskStuInf findTaskStuInf(String task_id,String s_id)throws Exception;
-	/**
-	 * ²é¿´ÈÎÎñÍê³ÉÇé¿ö
-	 * @param task_id ÈÎÎñid
-	 * @param s_id Ñ§Éúid
-	 * @return CheckTaskResultInf ÈÎÎñÍê³ÉÇé¿öĞÅÏ¢
-	 * @throws Exception
-	 */
-	public CheckTaskResultInf findTaskResultInf(String task_id,String s_id)throws Exception;
-	/**
-	 * Ôö¼ÓÈÎÎñ
-	 * @param task ÈÎÎñĞÅÏ¢
-	 * @param s_ids ²ÎÓëÈÎÎñÑ§Éú
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg insertTask(Task task,List<String> s_ids)throws Exception;
-	/**
-	 * ĞŞ¸ÄÈÎÎñ
-	 * @param task ÈÎÎñĞÅÏ¢
-	 * @param s_ids ²ÎÓëÈÎÎñÑ§Éú
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateTask(Task task,List<String> s_ids)throws Exception;
-	/**
-	 * É¾³ıÈÎÎñ
-	 * @param task_id ÈÎÎñid
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg deleteTask(String task_id)throws Exception;
-	/**
-	 * ²é¿´Ñ§ÉúÈÎÎñÖĞĞÄ
-	 * @param s_id Ñ§Éúid
-	 * @return TaskStuCenterList ÈÎÎñÁĞ±í
-	 * @throws Exception
-	 */
-	public TaskStuCenterList findStuCenterTask(String s_id)throws Exception;
-	/**
-	 * Ñ§ÉúÈÎÎñÖĞĞÄËÑË÷
-	 * @param s_id Ñ§Éúid
-	 * @param key ËÑË÷¹Ø¼ü´Ê
-	 * @return TaskStuCenterList ÈÎÎñÁĞ±í
-	 * @throws Exception
-	 */
-	public TaskStuCenterList getStuCenterTask(String s_id,String key)throws Exception;
-	/**
-	 * ²é¿´ÀÏÊ¦ÈÎÎñÖĞĞÄ
-	 * @param t_id ÀÏÊ¦id
-	 * @return TaskTchCenterList ÈÎÎñÁĞ±í
-	 * @throws Exception
-	 */
-	public TaskTchCenterList findTchCenterTask(String t_id)throws Exception;
-	/**
-	 * ÀÏÊ¦ÈÎÎñÖĞĞÄËÑË÷
-	 * @param t_id ÀÏÊ¦id
-	 * @param key ËÑË÷¹Ø¼ü´Ê
-	 * @return TaskTchCenterList ÈÎÎñÁĞ±í
-	 * @throws Exception
-	 */
-	public TaskTchCenterList getTchCenterTask(String t_id,String key)throws Exception;
-	/**
-	 * ²é¿´Ñ§Éú½ñÈÕÈÎÎñ
-	 * @param s_id Ñ§Éúid
-	 * @return TaskStuList ÈÎÎñÁĞ±í
-	 * @throws Exception
-	 */
-	public TaskStuList findStuTodayTask(String s_id)throws Exception;
-	/**
-	 * Ñ§Éú½ñÈÕÈÎÎñËÑË÷
-	 * @param s_id Ñ§Éúid
-	 * @param key ËÑË÷¹Ø¼ü´Ê
-	 * @return TaskStuList ÈÎÎñÁĞ±í
-	 * @throws Exception
-	 */
-	public TaskStuList getStuTodayTask(String s_id,String key)throws Exception;
-	/**
-	 * ²é¿´ÀÏÊ¦½ñÈÕÈÎÎñ
-	 * @param t_id ÀÏÊ¦id
-	 * @return TaskTchList ÈÎÎñÁĞ±í
-	 * @throws Exception
-	 */
-	public TaskTchList findTchTodayTask(String t_id)throws Exception;
-	/**
-	 * ÀÏÊ¦½ñÈÕÈÎÎñËÑË÷
-	 * @param t_id ÀÏÊ¦id
-	 * @param key ËÑË÷¹Ø¼ü´Ê
-	 * @return TaskTchList ÈÎÎñÁĞ±í
-	 * @throws Exception
-	 */
-	public TaskTchList getTchTodayTask(String t_id,String key)throws Exception;
-	/**
-	 * ÀÏÊ¦²é¿´Ñ§ÉúÈÎÎñ
-	 * @param t_id ÀÏÊ¦id
-	 * @param s_id Ñ§Éúid
-	 * @return TaskTchCenterList ÈÎÎñÁĞ±í
-	 * @throws Exception
-	 */
-	public TaskTchCenterList findStuTaskByTch(String t_id,String s_id)throws Exception;
-	/**
-	 * Ñ§Éú²é¿´ÀÏÊ¦ÈÎÎñ
-	 * @param t_id ÀÏÊ¦id
-	 * @param s_id Ñ§Éúid
-	 * @return TaskStuCenterList ÈÎÎñÁĞ±í
-	 * @throws Exception
-	 */
-	public TaskStuCenterList findTchTaskByStu(String t_id,String s_id)throws Exception;
-	/**
-	 * ĞŞ¸ÄÈÎÎñ×ÔÆÀÄÑ¶È
-	 * @param task_id ÈÎÎñid
-	 * @param s_id Ñ§Éúid 
-	 * @param level ×ÔÆÀÄÑ¶È
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateTaskLevel(String task_id,String s_id,int level)throws Exception;
-	/**
-	 * ĞŞ¸ÄÈÎÎñ½á¹ûÄÚÈİ
-	 * @param taskResult ½á¹ûĞÅÏ¢
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateTaskResult(TaskResult taskResult)throws Exception;
-	/**
-	 * ¸üĞÂÈÎÎñ½á¹û×´Ì¬
-	 * @param taskResult ½á¹ûĞÅÏ¢
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateResultStatus(TaskResult taskResult)throws Exception;
-	/**
-	 * ²é¿´Ñ§Éúµ¥¸öÈÎÎñ½á¹ûÁĞ±í
-	 * @param task_id ÈÎÎñid
-	 * @param s_id Ñ§Éúid
-	 * @return TaskResultList ÈÎÎñ½á¹ûÁĞ±í
-	 * @throws Exception
-	 */
-	public TaskResultList findTaskResultList(String task_id,String s_id)throws Exception;
-	/**
-	 * ²é¿´ÈÎÎñ½ñÈÕ½á¹ûÁĞ±í
-	 * @param task_id ÈÎÎñid
-	 * @return TaskResultTodayList ÈÎÎñ½á¹ûÁĞ±í
-	 * @throws Exception
-	 */
-	public TaskResultTodayList findTaskTodayList(String task_id)throws Exception;
-	/**
-	 * ÀÏÊ¦²é¿´ÈÎÎñ°å
-	 * @param t_id ÀÏÊ¦id
-	 * @param last_time ×î½üÒ»ÌõÏÔÊ¾½á¹û·¢±íÊ±¼ä£¨µÚÒ»´Î·ÃÎÊÊ¹ÓÃµ±Ç°Ê±¼ä£©
-	 * @return TaskBoard ÈÎÎñ°å¼ÇÂ¼ÁĞ±í
-	 * @throws Exception
-	 */
-	public TaskBoard findBoardForTch(String t_id,String last_time)throws Exception;
-	/**
-	 * ²é¿´ÀÏÊ¦ÈÎÎñ°åÊÇ·ñÓĞĞÂµÄ¼ÇÂ¼
-	 * @param t_id ÀÏÊ¦id
-	 * @param last_time ×î½üÒ»ÌõÏÔÊ¾½á¹û·¢±íÊ±¼ä£¨µÚÒ»´Î·ÃÎÊÊ¹ÓÃµ±Ç°Ê±¼ä£©
-	 * @return Msg£º0ÎŞ£¬1ÓĞ
-	 * @throws Exception
-	 */
-	public Msg findTchNewResult(String t_id,String last_time)throws Exception;
-	/**
-	 * Ñ§Éú²é¿´ÈÎÎñ°å
-	 * @param s_id Ñ§Éúid
-	 * @param last_time ×î½üÒ»ÌõÏÔÊ¾½á¹û·¢±íÊ±¼ä£¨µÚÒ»´Î·ÃÎÊÊ¹ÓÃµ±Ç°Ê±¼ä£©
-	 * @return TaskBoard ÈÎÎñ°å¼ÇÂ¼ÁĞ±í
-	 * @throws Exception
-	 */
-	public TaskBoard findBoardForStu(String s_id,String last_time)throws Exception;
-	/**
-	 * ²é¿´Ñ§ÉúÈÎÎñ°åÊÇ·ñÓĞĞÂµÄ¼ÇÂ¼
-	 * @param s_id Ñ§Éúid
-	 * @param last_time ×î½üÒ»ÌõÏÔÊ¾½á¹û·¢±íÊ±¼ä£¨µÚÒ»´Î·ÃÎÊÊ¹ÓÃµ±Ç°Ê±¼ä£©
-	 * @return Msg£º0ÎŞ£¬1ÓĞ
-	 * @throws Exception
-	 */
-	public Msg findStuNewResult(String s_id,String last_time)throws Exception;
-	/**
-	 * ¸üĞÂ½á¹ûÀÏÊ¦ÆÀ·Ö
-	 * @param id ½á¹ûid
-	 * @param t_id ÀÏÊ¦id
-	 * @param score ÆÀ·Ö
-	 * @return Msg ·µ»ØÏûÏ¢£º0³É¹¦£¬1ÎŞÈ¨ÏŞ£¬2ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateResultTchScore(String id,String t_id,float score) throws Exception;
-	/**
-	 * ¸üĞÂ½á¹ûÀÏÊ¦ÆÀÂÛ
-	 * @param id ½á¹ûid
-	 * @param t_id ÀÏÊ¦id
-	 * @param comment ÆÀÂÛ
-	 * @return Msg ·µ»ØÏûÏ¢£º0³É¹¦£¬1ÎŞÈ¨ÏŞ£¬2ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateResultTchComment(String id,String t_id,String comment) throws Exception;
+    /**
+     * è€å¸ˆæŸ¥çœ‹ä»»åŠ¡ä¿¡æ¯
+     * @param task_id ä»»åŠ¡id
+     * @return CheckTaskTchInf ä»»åŠ¡ä¿¡æ¯
+     * @throws Exception
+     */
+    public CheckTaskTchInf findTaskTchInf(String task_id)throws Exception;
+    /**
+     * å­¦ç”ŸæŸ¥çœ‹ä»»åŠ¡ä¿¡æ¯
+     * @param task_id ä»»åŠ¡id
+     * @param s_id å­¦ç”Ÿid
+     * @return CheckTaskStuInf ä»»åŠ¡ä¿¡æ¯
+     * @throws Exception
+     */
+    public CheckTaskStuInf findTaskStuInf(String task_id,String s_id)throws Exception;
+    /**
+     * æŸ¥çœ‹ä»»åŠ¡å®Œæˆæƒ…å†µ
+     * @param task_id ä»»åŠ¡id
+     * @param s_id å­¦ç”Ÿid
+     * @return CheckTaskResultInf ä»»åŠ¡å®Œæˆæƒ…å†µä¿¡æ¯
+     * @throws Exception
+     */
+    public CheckTaskResultInf findTaskResultInf(String task_id,String s_id)throws Exception;
+    /**
+     * å¢åŠ ä»»åŠ¡
+     * @param task ä»»åŠ¡ä¿¡æ¯
+     * @param s_ids å‚ä¸ä»»åŠ¡å­¦ç”Ÿ
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg insertTask(Task task,List<String> s_ids)throws Exception;
+    /**
+     * ä¿®æ”¹ä»»åŠ¡
+     * @param task ä»»åŠ¡ä¿¡æ¯
+     * @param s_ids å‚ä¸ä»»åŠ¡å­¦ç”Ÿ
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateTask(Task task,List<String> s_ids)throws Exception;
+    /**
+     * åˆ é™¤ä»»åŠ¡
+     * @param task_id ä»»åŠ¡id
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg deleteTask(String task_id)throws Exception;
+    /**
+     * æŸ¥çœ‹å­¦ç”Ÿä»»åŠ¡ä¸­å¿ƒ
+     * @param s_id å­¦ç”Ÿid
+     * @return TaskStuCenterList ä»»åŠ¡åˆ—è¡¨
+     * @throws Exception
+     */
+    public TaskStuCenterList findStuCenterTask(String s_id)throws Exception;
+    /**
+     * å­¦ç”Ÿä»»åŠ¡ä¸­å¿ƒæœç´¢
+     * @param s_id å­¦ç”Ÿid
+     * @param key æœç´¢å…³é”®è¯
+     * @return TaskStuCenterList ä»»åŠ¡åˆ—è¡¨
+     * @throws Exception
+     */
+    public TaskStuCenterList getStuCenterTask(String s_id,String key)throws Exception;
+    /**
+     * æŸ¥çœ‹è€å¸ˆä»»åŠ¡ä¸­å¿ƒ
+     * @param t_id è€å¸ˆid
+     * @return TaskTchCenterList ä»»åŠ¡åˆ—è¡¨
+     * @throws Exception
+     */
+    public TaskTchCenterList findTchCenterTask(String t_id)throws Exception;
+    /**
+     * è€å¸ˆä»»åŠ¡ä¸­å¿ƒæœç´¢
+     * @param t_id è€å¸ˆid
+     * @param key æœç´¢å…³é”®è¯
+     * @return TaskTchCenterList ä»»åŠ¡åˆ—è¡¨
+     * @throws Exception
+     */
+    public TaskTchCenterList getTchCenterTask(String t_id,String key)throws Exception;
+    /**
+     * æŸ¥çœ‹å­¦ç”Ÿä»Šæ—¥ä»»åŠ¡
+     * @param s_id å­¦ç”Ÿid
+     * @return TaskStuList ä»»åŠ¡åˆ—è¡¨
+     * @throws Exception
+     */
+    public TaskStuList findStuTodayTask(String s_id)throws Exception;
+    /**
+     * å­¦ç”Ÿä»Šæ—¥ä»»åŠ¡æœç´¢
+     * @param s_id å­¦ç”Ÿid
+     * @param key æœç´¢å…³é”®è¯
+     * @return TaskStuList ä»»åŠ¡åˆ—è¡¨
+     * @throws Exception
+     */
+    public TaskStuList getStuTodayTask(String s_id,String key)throws Exception;
+    /**
+     * æŸ¥çœ‹è€å¸ˆä»Šæ—¥ä»»åŠ¡
+     * @param t_id è€å¸ˆid
+     * @return TaskTchList ä»»åŠ¡åˆ—è¡¨
+     * @throws Exception
+     */
+    public TaskTchList findTchTodayTask(String t_id)throws Exception;
+    /**
+     * è€å¸ˆä»Šæ—¥ä»»åŠ¡æœç´¢
+     * @param t_id è€å¸ˆid
+     * @param key æœç´¢å…³é”®è¯
+     * @return TaskTchList ä»»åŠ¡åˆ—è¡¨
+     * @throws Exception
+     */
+    public TaskTchList getTchTodayTask(String t_id,String key)throws Exception;
+    /**
+     * è€å¸ˆæŸ¥çœ‹å­¦ç”Ÿä»»åŠ¡
+     * @param t_id è€å¸ˆid
+     * @param s_id å­¦ç”Ÿid
+     * @return TaskTchCenterList ä»»åŠ¡åˆ—è¡¨
+     * @throws Exception
+     */
+    public TaskTchCenterList findStuTaskByTch(String t_id,String s_id)throws Exception;
+    /**
+     * å­¦ç”ŸæŸ¥çœ‹è€å¸ˆä»»åŠ¡
+     * @param t_id è€å¸ˆid
+     * @param s_id å­¦ç”Ÿid
+     * @return TaskStuCenterList ä»»åŠ¡åˆ—è¡¨
+     * @throws Exception
+     */
+    public TaskStuCenterList findTchTaskByStu(String t_id,String s_id)throws Exception;
+    /**
+     * ä¿®æ”¹ä»»åŠ¡è‡ªè¯„éš¾åº¦
+     * @param task_id ä»»åŠ¡id
+     * @param s_id å­¦ç”Ÿid 
+     * @param level è‡ªè¯„éš¾åº¦
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateTaskLevel(String task_id,String s_id,int level)throws Exception;
+    /**
+     * ä¿®æ”¹ä»»åŠ¡ç»“æœå†…å®¹
+     * @param taskResult ç»“æœä¿¡æ¯
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateTaskResult(TaskResult taskResult)throws Exception;
+    /**
+     * æ›´æ–°ä»»åŠ¡ç»“æœçŠ¶æ€
+     * @param taskResult ç»“æœä¿¡æ¯
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateResultStatus(TaskResult taskResult)throws Exception;
+    /**
+     * æŸ¥çœ‹å­¦ç”Ÿå•ä¸ªä»»åŠ¡ç»“æœåˆ—è¡¨
+     * @param task_id ä»»åŠ¡id
+     * @param s_id å­¦ç”Ÿid
+     * @return TaskResultList ä»»åŠ¡ç»“æœåˆ—è¡¨
+     * @throws Exception
+     */
+    public TaskResultList findTaskResultList(String task_id,String s_id)throws Exception;
+    /**
+     * æŸ¥çœ‹ä»»åŠ¡ä»Šæ—¥ç»“æœåˆ—è¡¨
+     * @param task_id ä»»åŠ¡id
+     * @return TaskResultTodayList ä»»åŠ¡ç»“æœåˆ—è¡¨
+     * @throws Exception
+     */
+    public TaskResultTodayList findTaskTodayList(String task_id)throws Exception;
+    /**
+     * è€å¸ˆæŸ¥çœ‹ä»»åŠ¡æ¿
+     * @param t_id è€å¸ˆid
+     * @param last_time æœ€è¿‘ä¸€æ¡æ˜¾ç¤ºç»“æœå‘è¡¨æ—¶é—´ï¼ˆç¬¬ä¸€æ¬¡è®¿é—®ä½¿ç”¨å½“å‰æ—¶é—´ï¼‰
+     * @return TaskBoard ä»»åŠ¡æ¿è®°å½•åˆ—è¡¨
+     * @throws Exception
+     */
+    public TaskBoard findBoardForTch(String t_id,String last_time)throws Exception;
+    /**
+     * æŸ¥çœ‹è€å¸ˆä»»åŠ¡æ¿æ˜¯å¦æœ‰æ–°çš„è®°å½•
+     * @param t_id è€å¸ˆid
+     * @param last_time æœ€è¿‘ä¸€æ¡æ˜¾ç¤ºç»“æœå‘è¡¨æ—¶é—´ï¼ˆç¬¬ä¸€æ¬¡è®¿é—®ä½¿ç”¨å½“å‰æ—¶é—´ï¼‰
+     * @return Msgï¼š0æ— ï¼Œ1æœ‰
+     * @throws Exception
+     */
+    public Msg findTchNewResult(String t_id,String last_time);
+    /**
+     * å­¦ç”ŸæŸ¥çœ‹ä»»åŠ¡æ¿
+     * @param s_id å­¦ç”Ÿid
+     * @param last_time æœ€è¿‘ä¸€æ¡æ˜¾ç¤ºç»“æœå‘è¡¨æ—¶é—´ï¼ˆç¬¬ä¸€æ¬¡è®¿é—®ä½¿ç”¨å½“å‰æ—¶é—´ï¼‰
+     * @return TaskBoard ä»»åŠ¡æ¿è®°å½•åˆ—è¡¨
+     * @throws Exception
+     */
+    public TaskBoard findBoardForStu(String s_id,String last_time)throws Exception;
+    /**
+     * æŸ¥çœ‹å­¦ç”Ÿä»»åŠ¡æ¿æ˜¯å¦æœ‰æ–°çš„è®°å½•
+     * @param s_id å­¦ç”Ÿid
+     * @param last_time æœ€è¿‘ä¸€æ¡æ˜¾ç¤ºç»“æœå‘è¡¨æ—¶é—´ï¼ˆç¬¬ä¸€æ¬¡è®¿é—®ä½¿ç”¨å½“å‰æ—¶é—´ï¼‰
+     * @return Msgï¼š0æ— ï¼Œ1æœ‰
+     * @throws Exception
+     */
+    public Msg findStuNewResult(String s_id,String last_time);
+    /**
+     * æ›´æ–°ç»“æœè€å¸ˆè¯„åˆ†
+     * @param id ç»“æœid
+     * @param t_id è€å¸ˆid
+     * @param score è¯„åˆ†
+     * @return Msg è¿”å›æ¶ˆæ¯ï¼š0æˆåŠŸï¼Œ1æ— æƒé™ï¼Œ2å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateResultTchScore(String id,String t_id,float score) throws Exception;
+    /**
+     * æ›´æ–°ç»“æœè€å¸ˆè¯„è®º
+     * @param id ç»“æœid
+     * @param t_id è€å¸ˆid
+     * @param comment è¯„è®º
+     * @return Msg è¿”å›æ¶ˆæ¯ï¼š0æˆåŠŸï¼Œ1æ— æƒé™ï¼Œ2å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateResultTchComment(String id,String t_id,String comment) throws Exception;
 }

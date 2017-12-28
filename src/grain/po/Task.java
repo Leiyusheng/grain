@@ -14,6 +14,8 @@ public class Task {
 	private String task_info;
 	private int status;
 	private int total_num;
+	private int clock_num;
+	
 	public String getTask_id() {
 		return task_id;
 	}
@@ -80,11 +82,17 @@ public class Task {
 	public void setTotal_num(int total_num) {
 		this.total_num = total_num;
 	}
-	@Override
-	public String toString() {
-		return "Task [task_id=" + task_id + ", teacher_id=" + teacher_id + ", teacher_name=" + teacher_name
-				+ ", task_logo=" + task_logo + ", task_name=" + task_name + ", difficulty_level=" + difficulty_level
-				+ ", start_date=" + start_date + ", end_date=" + end_date + ", task_info=" + task_info + ", status="
-				+ status + ", total_num=" + total_num + "]";
-	}
+	public int getClock_num() {
+        return clock_num;
+    }
+    public void setClock_num(int clock_num) {
+        this.clock_num = clock_num;
+    }
+    @Override
+    public String toString() {
+        return "Task [task_id=" + task_id + ", teacher_id=" + teacher_id + ", teacher_name=" + teacher_name
+                + ", task_logo=" + task_logo + ", task_name=" + task_name + ", difficulty_level=" + difficulty_level
+                + ", start_date=" + start_date + ", end_date=" + end_date + ", task_info=" + task_info + ", status="
+                + status + ", total_num=" + total_num + ", clock_num=" + clock_num + "]";
+    }
 }

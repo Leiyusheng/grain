@@ -18,45 +18,45 @@ import grain.service.ImgCompressService;
 @Service
 public class ImgCompressServiceImpl implements ImgCompressService {
 
-	private Image img;
+    private Image img;
     private String url;
     private int width;  
     private int height;  
     private static int head_size=200;
     private static int task_size=150;
     private static int result_size=400;
-	@Override
-	public void imgCompress(String fileName,String targetUrl,int method)throws IOException {
-		File file = new File(fileName);// ¶ÁÈëÎÄ¼ş  
-        url = targetUrl;			   // µÃµ½Í¼Æ¬Ãû
-        img = ImageIO.read(file);      // ¹¹ÔìImage¶ÔÏó  
-        width = img.getWidth(null);    // µÃµ½Ô´Í¼¿í  
-        height = img.getHeight(null);  // µÃµ½Ô´Í¼³¤  
+    @Override
+    public void imgCompress(String fileName,String targetUrl,int method)throws IOException {
+        File file = new File(fileName);// è¯»å…¥æ–‡ä»¶  
+        url = targetUrl;               // å¾—åˆ°å›¾ç‰‡å
+        img = ImageIO.read(file);      // æ„é€ Imageå¯¹è±¡  
+        width = img.getWidth(null);    // å¾—åˆ°æºå›¾å®½  
+        height = img.getHeight(null);  // å¾—åˆ°æºå›¾é•¿  
         int size=0;
         switch (method) {
-		case 1:
-			size =head_size;
-			break;
-		case 2:
-			size =task_size;
-			break;
-		case 3:
-			size =result_size;
-		default:
-			break;
-		}
+        case 1:
+            size =head_size;
+            break;
+        case 2:
+            size =task_size;
+            break;
+        case 3:
+            size =result_size;
+        default:
+            break;
+        }
         if(width>size||height>size){
-        	resizeFix(size, size); 
+            resizeFix(size, size); 
         }
         else{
-        	resizeFix(width, height);
+            resizeFix(width, height);
         }
-	}
-	  
+    }
+      
     /** 
-     * °´ÕÕ¿í¶È»¹ÊÇ¸ß¶È½øĞĞÑ¹Ëõ 
-     * @param w int ×î´ó¿í¶È 
-     * @param h int ×î´ó¸ß¶È 
+     * æŒ‰ç…§å®½åº¦è¿˜æ˜¯é«˜åº¦è¿›è¡Œå‹ç¼© 
+     * @param w int æœ€å¤§å®½åº¦ 
+     * @param h int æœ€å¤§é«˜åº¦ 
      */  
     private void resizeFix(int w, int h) throws IOException {  
         if (width * h > w * height) {  
@@ -66,35 +66,35 @@ public class ImgCompressServiceImpl implements ImgCompressService {
         }  
     }  
     /** 
-     * ÒÔ¿í¶ÈÎª»ù×¼£¬µÈ±ÈÀı·ÅËõÍ¼Æ¬ 
-     * @param w int ĞÂ¿í¶È 
+     * ä»¥å®½åº¦ä¸ºåŸºå‡†ï¼Œç­‰æ¯”ä¾‹æ”¾ç¼©å›¾ç‰‡ 
+     * @param w int æ–°å®½åº¦ 
      */  
     private void resizeByWidth(int w) throws IOException {  
         int h = (int) (height * w / width);  
         resize(w, h);  
     }  
     /** 
-     * ÒÔ¸ß¶ÈÎª»ù×¼£¬µÈ±ÈÀıËõ·ÅÍ¼Æ¬ 
-     * @param h int ĞÂ¸ß¶È 
+     * ä»¥é«˜åº¦ä¸ºåŸºå‡†ï¼Œç­‰æ¯”ä¾‹ç¼©æ”¾å›¾ç‰‡ 
+     * @param h int æ–°é«˜åº¦ 
      */  
     private void resizeByHeight(int h) throws IOException {  
         int w = (int) (width * h / height);  
         resize(w, h);  
     }  
     /** 
-     * Ç¿ÖÆÑ¹Ëõ/·Å´óÍ¼Æ¬µ½¹Ì¶¨µÄ´óĞ¡ 
-     * @param w int ĞÂ¿í¶È 
-     * @param h int ĞÂ¸ß¶È 
+     * å¼ºåˆ¶å‹ç¼©/æ”¾å¤§å›¾ç‰‡åˆ°å›ºå®šçš„å¤§å° 
+     * @param w int æ–°å®½åº¦ 
+     * @param h int æ–°é«˜åº¦ 
      */  
     private void resize(int w, int h) throws IOException {  
-        // SCALE_SMOOTH µÄËõÂÔËã·¨ Éú³ÉËõÂÔÍ¼Æ¬µÄÆ½»¬¶ÈµÄ ÓÅÏÈ¼¶±ÈËÙ¶È¸ß Éú³ÉµÄÍ¼Æ¬ÖÊÁ¿±È½ÏºÃ µ«ËÙ¶ÈÂı  
+        // SCALE_SMOOTH çš„ç¼©ç•¥ç®—æ³• ç”Ÿæˆç¼©ç•¥å›¾ç‰‡çš„å¹³æ»‘åº¦çš„ ä¼˜å…ˆçº§æ¯”é€Ÿåº¦é«˜ ç”Ÿæˆçš„å›¾ç‰‡è´¨é‡æ¯”è¾ƒå¥½ ä½†é€Ÿåº¦æ…¢  
         BufferedImage image = new BufferedImage(w, h,BufferedImage.TYPE_INT_RGB );   
-        image.getGraphics().drawImage(img, 0, 0, w, h, null); // »æÖÆËõĞ¡ºóµÄÍ¼  
+        image.getGraphics().drawImage(img, 0, 0, w, h, null); // ç»˜åˆ¶ç¼©å°åçš„å›¾  
         File destFile = new File(url);  
-        FileOutputStream out = new FileOutputStream(destFile); // Êä³öµ½ÎÄ¼şÁ÷  
-        // ¿ÉÒÔÕı³£ÊµÏÖbmp¡¢png¡¢gif×ªjpg  
+        FileOutputStream out = new FileOutputStream(destFile); // è¾“å‡ºåˆ°æ–‡ä»¶æµ  
+        // å¯ä»¥æ­£å¸¸å®ç°bmpã€pngã€gifè½¬jpg  
         JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);  
-        encoder.encode(image); // JPEG±àÂë  
+        encoder.encode(image); // JPEGç¼–ç   
         out.close();  
     } 
 }

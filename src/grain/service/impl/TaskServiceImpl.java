@@ -42,529 +42,557 @@ import grain.po.TaskStudent;
 import grain.service.TaskService;
 
 public class TaskServiceImpl implements TaskService {
-	@Autowired
-	private TaskMapper taskMapper;
-	@Autowired
-	private StuMapper stuMapper;
-	@Autowired
-	private CtctMapper ctctMapper;
-	@Autowired
-	private TaskResultMapper taskResultMapper;
-	@Autowired
-	private BoardMapper boardMapper;
-	//ÀÏÊ¦²é¿´ÈÎÎñĞÅÏ¢
-	@Override
-	public CheckTaskTchInf findTaskTchInf(String task_id) throws Exception {
-		int status=1;
-		Task task;
-		List<Student> sList;
-		try {
-			task=taskMapper.findTaskByTaskId(task_id);
-			sList=taskMapper.findTaskStuList(task_id);
-			
-			status=0;
-		} catch (Exception e) {
-			throw e;
-		}
-		TaskTchInf taskTchInf=new TaskTchInf(task,sList);
-		CheckTaskTchInf checkTaskTchInf=new CheckTaskTchInf(status, taskTchInf);
-		return checkTaskTchInf;
-	}
-	//Ñ§Éú²é¿´ÈÎÎñĞÅÏ¢
-	@Override
-	public CheckTaskStuInf findTaskStuInf(String task_id,String s_id) throws Exception {
-		int status=1;
-		int self_level=0;
-		Task task;
-		try {
-			task=taskMapper.findTaskByTaskId(task_id);
-			TaskStudent tStudent=taskMapper.findTaskStuById(task_id, s_id);
-			self_level=tStudent.getDifficulty_level();//×ÔÆÀÄÑ¶È
-			status=0;
-		} catch (Exception e) {
-			throw e;
-		}
-		TaskStuInf taskStuInf=new TaskStuInf(task,self_level);
-		CheckTaskStuInf checkTaskStuInf=new CheckTaskStuInf(status, taskStuInf);
-		return checkTaskStuInf;
-	}
-	//²åÈëĞÂÈÎÎñ
-	@Override
-	public Msg insertTask(Task task,List<String> s_ids) throws Exception {
-		int status=1;
-		String s=UUID.randomUUID().toString();
-		String id=s.substring(0,8)+s.substring(9,13)+s.substring(14,18)+s.substring(19,23)+s.substring(24);
-		task.setTask_id(id);//ÉèÖÃÈÎÎñid
-		task.setTotal_num(s_ids.size());//ÉèÖÃÈÎÎñ×ÜÈËÊı
-		Date date=new Date(System.currentTimeMillis());//»ñÈ¡µ±Ç°ÈÕÆÚ
-		if(date.before(task.getStart_date())){//ÅĞ¶ÏÈÎÎñ³õÊ¼×´Ì¬
-			task.setStatus(0);
-		}
-		else{
-			task.setStatus(1);
-		}
-		try {
-			taskMapper.insertTask(task);
-			for(int i=0;i<s_ids.size();i++){//¼ÓÈëÈÎÎñµÄÑ§Éú
-				String s_id=s_ids.get(i);
-				TaskStudent taskStudent=new TaskStudent(id,s_id);
-				taskMapper.insertTaskStu(taskStudent);
-			}
-			status=0;
-		} catch (Exception e) {
-			throw e;
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//±à¼­ÈÎÎñ
-	@Override
-	public Msg updateTask(Task task,List<String> s_ids) throws Exception {
-		int status=1;
-		String task_id=task.getTask_id();
-		Date date=new Date(System.currentTimeMillis());//»ñÈ¡µ±Ç°ÈÕÆÚ
-		if(date.before(task.getStart_date())){
-			task.setStatus(0);
-		}
-		else{
-			task.setStatus(1);
-		}
-		try {
-			status=taskMapper.updateTask(task);
-			List<Student> sList=taskMapper.findTaskStuList(task_id);//»ñÈ¡¸ÃÈÎÎñÔ­À´µÄÑ§Éú
-			String t_id=taskMapper.findTaskByTaskId(task_id).getTeacher_id();
-			for(int i=0;i<s_ids.size();i++){//ĞŞ¸ÄÈÎÎñµÄÑ§Éú
-				int stu_status=1;//¸ÃÑ§Éú×´Ì¬£¬1ÎªĞÂÔö£¬0ÎªÔ­ÓĞ
-				String n_s_id=s_ids.get(i);//ĞÂµÄ·Ö×éÑ§Éúid
-				Contact contact=ctctMapper.findContactById(t_id, n_s_id);
-				if(contact!=null&&contact.getStatus()==1){//ÅĞ¶Ï¸ÃÑ§ÉúÊÇ·ñÊôÓÚ¸ÃÀÏÊ¦
-					for(int j=0;j<sList.size();j++){
-						String o_s_id=sList.get(j).getStudent_id();//¾ÉµÄ·Ö×éÑ§Éúid
-						if(n_s_id.equals(o_s_id)){
-							stu_status=0;//¸ÃÑ§ÉúÒÑ´æÔÚ
-							sList.remove(j--);//ÒÆ³ı·Ö×éÔ­À´µÄÑ§ÉúÖĞÈÎÈ»´æÔÚµÄ
-							break;
-						}
-					}
-					if(stu_status==1){
-						try {
-							TaskStudent taskStudent=new TaskStudent(task_id,n_s_id);
-							taskMapper.insertTaskStu(taskStudent);
-							taskMapper.updateTaskStuCount(1, task_id);
-						} catch (DuplicateKeyException e1) {
-							//¼ÓÈëÒÑÓĞÑ§ÉúÔòÌø¹ı
-						} catch (Exception e) {
-							throw e;
-						} 
-					}
-				}
-			}
-			for(int i=0;i<sList.size();i++){
-				String s_id=sList.get(i).getStudent_id();
-				try {
-					taskMapper.deleteTaskStu(task_id, s_id);
-					taskMapper.updateTaskStuCount(0, task_id);
-				} catch (Exception e) {
-					throw e;
-				} 
-			}
-			status=0;
-		} catch (Exception e) {
-			throw e;
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//É¾³ıÈÎÎñ
-	@Override
-	public Msg deleteTask(String task_id) throws Exception {
-		int status=2;
-		Task task=taskMapper.findTaskByTaskId(task_id);
-		if(task==null){
-			status=1;
-		}
-		else{
-			task.setStatus(3);
-			try {
-				status=taskMapper.updateTask(task);
-				if(status==0){
-					status=2;
-				}
-				else{
-					status=0;
-				}
-			} catch (Exception e) {
-				throw e;
-			}
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//²é¿´Ñ§ÉúÈÎÎñÖĞĞÄ
-	@Override
-	public TaskStuCenterList findStuCenterTask(String s_id) throws Exception {
-		List<Task> tasks=taskMapper.findTaskCenterByStu(s_id);
-		TaskStuCenterList tList=new TaskStuCenterList();
-		for(int i=0;i<tasks.size();i++){
-			Task task=tasks.get(i);
-			TaskStuCenterInf tInf=new TaskStuCenterInf(task);
-			tList.addTaskInf(tInf);
-		}
-		return tList;
-	}
-	//ËÑË÷Ñ§ÉúÈÎÎñÖĞĞÄ
-	@Override
-	public TaskStuCenterList getStuCenterTask(String s_id,String key) throws Exception {
-		List<Task> tasks=taskMapper.searchTaskCenterByStu(s_id,key);
-		TaskStuCenterList tList=new TaskStuCenterList();
-		for(int i=0;i<tasks.size();i++){
-			Task task=tasks.get(i);
-			TaskStuCenterInf tInf=new TaskStuCenterInf(task);
-			tList.addTaskInf(tInf);
-		}
-		return tList;
-	}
-	//²é¿´ÀÏÊ¦ÈÎÎñÖĞĞÄ
-	@Override
-	public TaskTchCenterList findTchCenterTask(String t_id) throws Exception {
-		List<Task> tasks=taskMapper.findTaskCenterByTch(t_id);
-		TaskTchCenterList tList=new TaskTchCenterList();
-		for(int i=0;i<tasks.size();i++){
-			Task task=tasks.get(i);
-			TaskTchCenterInf tInf=new TaskTchCenterInf(task);
-			tList.addTaskInf(tInf);
-		}
-		return tList;
-	}
-	//ËÑË÷ÀÏÊ¦ÈÎÎñÖĞĞÄ
-	@Override
-	public TaskTchCenterList getTchCenterTask(String t_id,String key) throws Exception {
-		List<Task> tasks=taskMapper.searchTaskCenterByTch(t_id,key);
-		TaskTchCenterList tList=new TaskTchCenterList();
-		for(int i=0;i<tasks.size();i++){
-			Task task=tasks.get(i);
-			TaskTchCenterInf tInf=new TaskTchCenterInf(task);
-			tList.addTaskInf(tInf);
-		}
-		return tList;
-	}
-	//²é¿´Ñ§Éú½ñÌì¸öÈËÈÎÎñÁĞ±í
-	@Override
-	public TaskStuList findStuTodayTask(String s_id) throws Exception {
-		List<Task> tasks=taskMapper.findTodayTaskByStuId(s_id);
-		TaskStuList tList=new TaskStuList();
-		for(int i=0;i<tasks.size();i++){
-			Task task=tasks.get(i);
-			int practice_time=0;//»ñÈ¡Íê³ÉÊ±¼ä
-			int status=0;//Î´·¢±í
-			TaskResult result=taskResultMapper.findTaskResultByStu(task.getTask_id(), s_id);
-			if(result!=null){
-				practice_time=result.getPractice_time();
-				status=result.getStatus();
-			}
-			TaskStuSimpleInf sInf=new TaskStuSimpleInf(task, practice_time,status);
-			tList.addTaskInf(sInf);
-		}
-		return tList;
-	}
-	//ËÑË÷Ñ§Éú½ñÌì¸öÈËÈÎÎñÁĞ±í
-	@Override
-	public TaskStuList getStuTodayTask(String s_id,String key) throws Exception {
-		List<Task> tasks=taskMapper.searchTodayTaskByStuId(s_id,key);
-		TaskStuList tList=new TaskStuList();
-		for(int i=0;i<tasks.size();i++){
-			Task task=tasks.get(i);
-			int practice_time=0;//»ñÈ¡Íê³ÉÊ±¼ä
-			int status=0;//Î´·¢±í
-			TaskResult result=taskResultMapper.findTaskResultByStu(task.getTask_id(), s_id);
-			if(result!=null){
-				practice_time=result.getPractice_time();
-				status=result.getStatus();
-			}
-			TaskStuSimpleInf sInf=new TaskStuSimpleInf(task, practice_time,status);
-			tList.addTaskInf(sInf);
-		}
-		return tList;
-	}
-	//²é¿´ÀÏÊ¦½ñÌì¸öÈËÈÎÎñÁĞ±í
-	@Override
-	public TaskTchList findTchTodayTask(String t_id) throws Exception {
-		List<Task> tasks=taskMapper.findTodayTaskByTchId(t_id);
-		TaskTchList tList=new TaskTchList();
-		for(int i=0;i<tasks.size();i++){
-			Task task=tasks.get(i);
-			int finish_num=taskResultMapper.findTaskResultNumById(task.getTask_id());//»ñÈ¡½ñÌìÍê³ÉÈËÊı
-			System.out.println(finish_num);
-			TaskTchSimpleInf tInf=new TaskTchSimpleInf(task,finish_num);
-			tList.addTaskInf(tInf);
-		}
-		return tList;
-	}
-	//ËÑË÷ÀÏÊ¦½ñÌì¸öÈËÈÎÎñÁĞ±í
-	@Override
-	public TaskTchList getTchTodayTask(String t_id,String key) throws Exception {
-	List<Task> tasks=taskMapper.searchTodayTaskByTchId(t_id,key);
-		TaskTchList tList=new TaskTchList();
-		for(int i=0;i<tasks.size();i++){
-			Task task=tasks.get(i);
-			int finish_num=taskResultMapper.findTaskResultNumById(task.getTask_id());//»ñÈ¡½ñÌìÍê³ÉÈËÊı
-			System.out.println(finish_num);
-			TaskTchSimpleInf tInf=new TaskTchSimpleInf(task,finish_num);
-			tList.addTaskInf(tInf);
-		}
-		return tList;
-	}
-	//ÀÏÊ¦²é¿´Ñ§ÉúÈÎÎñÁĞ±í
-	@Override
-	public TaskTchCenterList findStuTaskByTch(String t_id, String s_id) throws Exception {
-		List<Task> tasks=taskMapper.findStuTaskByTch(t_id, s_id);
-		TaskTchCenterList tList=new TaskTchCenterList();
-		for(int i=0;i<tasks.size();i++){
-			Task task=tasks.get(i);
-			TaskTchCenterInf tInf=new TaskTchCenterInf(task);
-			tList.addTaskInf(tInf);
-		}
-		return tList;
-	}
-	//Ñ§Éú²é¿´ÀÏÊ¦ÈÎÎñÁĞ±í
-	@Override
-	public TaskStuCenterList findTchTaskByStu(String t_id, String s_id) throws Exception {
-		List<Task> tasks=taskMapper.findTchTaskByStu(s_id, t_id);
-		TaskStuCenterList sList=new TaskStuCenterList();
-		for(int i=0;i<tasks.size();i++){
-			Task task=tasks.get(i);
-			TaskStuCenterInf tInf=new TaskStuCenterInf(task);
-			sList.addTaskInf(tInf);
-		}
-		return sList;
-	}
-	//²é¿´Íê³ÉÇé¿ö
-	@Override
-	public CheckTaskResultInf findTaskResultInf(String task_id, String s_id) throws Exception {
-		int status=1;
-		Task task=taskMapper.findTaskByTaskId(task_id);
-		TaskResult taskResult=taskResultMapper.findTaskResultByStu(task_id, s_id);
-		TaskResultInf taskResultInf;
-		if(task==null){
-			taskResultInf=new TaskResultInf();
-			status=1;
-		}
-		else{
-			if(taskResult==null){
-				String s=UUID.randomUUID().toString();
-				String id=s.substring(0,8)+s.substring(9,13)+s.substring(14,18)+s.substring(19,23)+s.substring(24);
-				taskResult=new TaskResult(id,s_id,task_id);
-				try {
-					taskResultMapper.insertTaskResult(taskResult);
-					status=0;
-				} catch (Exception e) {
-					status=1;
-					throw e;
-				}
-			}
-			else{
-				status=0;
-			}
-			taskResultInf=new TaskResultInf(task,taskResult);
-		}
-		CheckTaskResultInf checkTaskResultInf=new CheckTaskResultInf(status,taskResultInf);
-		return checkTaskResultInf;
-	}
-	//±à¼­ÈÎÎñÄÑ¶È
-	public Msg updateTaskLevel(String task_id, String s_id, int level) throws Exception {
-		int status=1;
-		TaskStudent taskStudent=taskMapper.findTaskStuById(task_id, s_id);
-		if(taskStudent==null){
-			status=1;
-		}
-		else{
-			taskStudent.setDifficulty_level(level);
-			try {
-				status=taskMapper.updateTaskLevel(taskStudent);
-				if(status==0){
-					status=1;
-				}
-				else{
-					status=0;
-				}
-			} catch (Exception e) {
-				throw e;
-			}
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//¸üĞÂÈÎÎñÍê³ÉÇé¿ö
-	@Override
-	public Msg updateTaskResult(TaskResult taskResult) throws Exception {
-		int status=1;
-		try {
-			TaskResult result=taskResultMapper.findTaskResultById(taskResult.getTask_result_id());
-			result.setBasicInf(taskResult.getPractice_time(), taskResult.getSelf_score());
-			status=taskResultMapper.updateTaskResult(result);
-			if(status==0){
-				status=1;
-			}
-			else{
-				status=0;
-			}
-		} catch (Exception e) {
-			status=1;
-			throw e;
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//·¢±íÈÎÎñÇé¿ö
-	@Override
-	public Msg updateResultStatus(TaskResult taskResult) throws Exception {
-		int status=1;
-		try {
-			TaskResult result=taskResultMapper.findTaskResultById(taskResult.getTask_result_id());
-			result.setPublishInf(taskResult.getFinish_photo(), taskResult.getComments());
-			taskResultMapper.updateTaskResult(result);
-			status=boardMapper.updateResultStatus(taskResult.getTask_result_id());
-			if(status==0){
-				status=1;
-			}
-			else{
-				status=0;
-			}
-		} catch (Exception e) {
-			status=1;
-			throw e;
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//°´ÈÕÆÚ²é¿´Ñ§ÉúÈÎÎñÍê³ÉÇé¿ö
-	@Override
-	public TaskResultList findTaskResultList(String task_id,String s_id) throws Exception {
-		int status=1;
-		TaskResultList rList;
-		Task task=taskMapper.findTaskByTaskId(task_id);
-		Student stu=stuMapper.findStuById(s_id);
-		if(task!=null&&task.getStatus()!=3&&stu!=null){
-			status=0;
-			rList=new TaskResultList(status,task,stu);
-			List<TaskResult> taskResults=taskResultMapper.findTaskResultByDate(task_id, s_id);
-			for(int i=0;i<taskResults.size();i++){
-				TaskResult taskResult=taskResults.get(i);
-				TaskResultSimpleInf tInf=new TaskResultSimpleInf(taskResult);
-				rList.addTaskResultInf(tInf);
-			}
-		}
-		else{
-			rList=new TaskResultList(status);
-		}
-		return rList;
-	}
-	//ÀÏÊ¦²é¿´µ¥¸öÈÎÎñ½ñÈÕÍê³ÉÇé¿ö
-	@Override
-	public TaskResultTodayList findTaskTodayList(String task_id) throws Exception {
-		List<TaskResultTotalInf> totalInfs=taskResultMapper.findTaskResultByTch(task_id);
-		Collections.sort(totalInfs, new Comparator<TaskResultTotalInf>() {
-			@Override
-			public int compare(TaskResultTotalInf o1, TaskResultTotalInf o2) {
-				int flag=new Integer(o2.getTotal_time()).compareTo(new Integer(o1.getTotal_time()));//×ÜÍê³ÉÊ±¼ä±È½Ï
-				if(flag==0){
-					flag=new Integer(o2.getToday_time()).compareTo(new Integer(o1.getToday_time()));//½ñÈÕÍê³ÉÊ±¼ä±È½Ï
-				}
-				if(flag==0){
-					flag=new Float(o2.getSelf_score()).compareTo(new Float(o1.getSelf_score()));//¸öÈËÆÀ·Ö±È½Ï
-				}
-				return flag;
-			}
-		});
-		TaskResultTodayList todayList=new TaskResultTodayList(totalInfs);
-		return todayList;
-	}
-	//ÀÏÊ¦²é¿´ÈÎÎñ°å
-	@Override
-	public TaskBoard findBoardForTch(String t_id, String last_time) throws Exception {
-		List<TaskResult> rList=boardMapper.findResultForTch(t_id, last_time);
-		TaskBoard taskBoard=new TaskBoard(rList);
-		return taskBoard;
-	}
-	//ÀÏÊ¦²é¿´ÊÇ·ñÓĞĞÂ½á¹û
-	@Override
-	public Msg findTchNewResult(String t_id, String last_time) throws Exception {
-		int status=1;
-		TaskResult taskResult=boardMapper.findNewResultForTch(t_id, last_time);
-		if(taskResult==null){
-			status=0;
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//Ñ§Éú²é¿´ÈÎÎñ°å
-	@Override
-	public TaskBoard findBoardForStu(String s_id, String last_time) throws Exception {
-		List<TaskResult> rList=boardMapper.findResultForStu(s_id, last_time);
-		TaskBoard taskBoard=new TaskBoard(rList);
-		return taskBoard;
-	}
-	//Ñ§Éú²é¿´ÊÇ·ñÓĞĞÂ½á¹û
-	@Override
-	public Msg findStuNewResult(String s_id, String last_time) throws Exception {
-		int status=1;
-		TaskResult taskResult=boardMapper.findNewResultForStu(s_id, last_time);
-		if(taskResult==null){
-			status=0;
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//¸üĞÂ½á¹ûÀÏÊ¦ÆÀ·Ö
-	@Override
-	public Msg updateResultTchScore(String id,String t_id,float score) throws Exception {
-		int status=2;
-		try {
-			TaskResult result=taskResultMapper.findTaskResultById(id);
-			Task task=taskMapper.findTaskByTaskId(result.getTask_id());
-			if(!t_id.equals(task.getTeacher_id())){
-				status=1;
-				return new Msg(status);
-			}
-			result.setTch_score(score);
-			status=boardMapper.updateResultTchScore(result);
-			if(status==0){
-				status=2;
-			}
-			else{
-				status=0;
-			}
-		} catch (Exception e) {
-			status=2;
-			throw e;
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//¸üĞÂ½á¹ûÀÏÊ¦ÆÀÂÛ
-	@Override
-	public Msg updateResultTchComment(String id,String t_id,String comment) throws Exception {
-		int status=2;
-		try {
-			TaskResult result=taskResultMapper.findTaskResultById(id);
-			Task task=taskMapper.findTaskByTaskId(result.getTask_id());
-			if(!t_id.equals(task.getTeacher_id())){
-				status=1;
-				return new Msg(status);
-			}
-			result.setTch_comment(comment);
-			status=boardMapper.updateResultTchComment(result);
-			if(status==0){
-				status=2;
-			}
-			else{
-				status=0;
-			}
-		} catch (Exception e) {
-			status=2;
-			throw e;
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
+    @Autowired
+    private TaskMapper taskMapper;
+    @Autowired
+    private StuMapper stuMapper;
+    @Autowired
+    private CtctMapper ctctMapper;
+    @Autowired
+    private TaskResultMapper taskResultMapper;
+    @Autowired
+    private BoardMapper boardMapper;
+    //è€å¸ˆæŸ¥çœ‹ä»»åŠ¡ä¿¡æ¯
+    @Override
+    public CheckTaskTchInf findTaskTchInf(String task_id) throws Exception {
+        int status = 1;
+        Task task;
+        List<Student> sList;
+        try {
+            task = taskMapper.findTaskByTaskId(task_id);
+            sList = taskMapper.findTaskStuList(task_id);
+            
+            status = 0;
+        } catch (Exception e) {
+            throw e;
+        }
+        TaskTchInf taskTchInf = new TaskTchInf(task,sList);
+        CheckTaskTchInf checkTaskTchInf = new CheckTaskTchInf(status, taskTchInf);
+        return checkTaskTchInf;
+    }
+    //å­¦ç”ŸæŸ¥çœ‹ä»»åŠ¡ä¿¡æ¯
+    @Override
+    public CheckTaskStuInf findTaskStuInf(String task_id,String s_id) throws Exception {
+        int status=1;
+        int self_level=0;
+        Task task;
+        try {
+            task=taskMapper.findTaskByTaskId(task_id);
+            TaskStudent tStudent=taskMapper.findTaskStuById(task_id, s_id);
+            self_level=tStudent.getDifficulty_level();//è‡ªè¯„éš¾åº¦
+            status=0;
+        } catch (Exception e) {
+            throw e;
+        }
+        TaskStuInf taskStuInf=new TaskStuInf(task,self_level);
+        CheckTaskStuInf checkTaskStuInf=new CheckTaskStuInf(status, taskStuInf);
+        return checkTaskStuInf;
+    }
+    //æ’å…¥æ–°ä»»åŠ¡
+    @Override
+    public Msg insertTask(Task task,List<String> s_ids) throws Exception {
+        int status=1;
+        String s=UUID.randomUUID().toString();
+        String id=s.substring(0,8)+s.substring(9,13)+s.substring(14,18)+s.substring(19,23)+s.substring(24);
+        task.setTask_id(id);//è®¾ç½®ä»»åŠ¡id
+        task.setTotal_num(s_ids.size());//è®¾ç½®ä»»åŠ¡æ€»äººæ•°
+        Date date=new Date(System.currentTimeMillis());//è·å–å½“å‰æ—¥æœŸ
+        if(date.before(task.getStart_date())){//åˆ¤æ–­ä»»åŠ¡åˆå§‹çŠ¶æ€
+            task.setStatus(0);
+        }
+        else{
+            task.setStatus(1);
+        }
+        try {
+            taskMapper.insertTask(task);
+            for(int i=0;i<s_ids.size();i++){//åŠ å…¥ä»»åŠ¡çš„å­¦ç”Ÿ
+                String s_id=s_ids.get(i);
+                TaskStudent taskStudent=new TaskStudent(id,s_id);
+                taskMapper.insertTaskStu(taskStudent);
+            }
+            status=0;
+        } catch (Exception e) {
+            throw e;
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //ç¼–è¾‘ä»»åŠ¡
+    @Override
+    public Msg updateTask(Task task,List<String> s_ids) throws Exception {
+        int status=1;
+        String task_id=task.getTask_id();
+        Date date=new Date(System.currentTimeMillis());//è·å–å½“å‰æ—¥æœŸ
+        if(date.before(task.getStart_date())){
+            task.setStatus(0);
+        }
+        else{
+            task.setStatus(1);
+        }
+        try {
+            status=taskMapper.updateTask(task);
+            List<Student> sList=taskMapper.findTaskStuList(task_id);//è·å–è¯¥ä»»åŠ¡åŸæ¥çš„å­¦ç”Ÿ
+            String t_id=taskMapper.findTaskByTaskId(task_id).getTeacher_id();
+            for(int i=0;i<s_ids.size();i++){//ä¿®æ”¹ä»»åŠ¡çš„å­¦ç”Ÿ
+                int stu_status=1;//è¯¥å­¦ç”ŸçŠ¶æ€ï¼Œ1ä¸ºæ–°å¢ï¼Œ0ä¸ºåŸæœ‰
+                String n_s_id=s_ids.get(i);//æ–°çš„åˆ†ç»„å­¦ç”Ÿid
+                Contact contact=ctctMapper.findContactById(t_id, n_s_id);
+                if(contact!=null&&contact.getStatus()==1){//åˆ¤æ–­è¯¥å­¦ç”Ÿæ˜¯å¦å±äºè¯¥è€å¸ˆ
+                    for(int j=0;j<sList.size();j++){
+                        String o_s_id=sList.get(j).getStudent_id();//æ—§çš„åˆ†ç»„å­¦ç”Ÿid
+                        if(n_s_id.equals(o_s_id)){
+                            stu_status=0;//è¯¥å­¦ç”Ÿå·²å­˜åœ¨
+                            sList.remove(j--);//ç§»é™¤åˆ†ç»„åŸæ¥çš„å­¦ç”Ÿä¸­ä»»ç„¶å­˜åœ¨çš„
+                            break;
+                        }
+                    }
+                    if(stu_status==1){
+                        try {
+                            TaskStudent taskStudent=new TaskStudent(task_id,n_s_id);
+                            taskMapper.insertTaskStu(taskStudent);
+                            taskMapper.updateTaskStuCount(1, task_id);
+                        } catch (DuplicateKeyException e1) {
+                            //åŠ å…¥å·²æœ‰å­¦ç”Ÿåˆ™è·³è¿‡
+                        } catch (Exception e) {
+                            throw e;
+                        } 
+                    }
+                }
+            }
+            for(int i=0;i<sList.size();i++){
+                String s_id=sList.get(i).getStudent_id();
+                try {
+                    taskMapper.deleteTaskStu(task_id, s_id);
+                    taskMapper.updateTaskStuCount(0, task_id);
+                } catch (Exception e) {
+                    throw e;
+                } 
+            }
+            status=0;
+        } catch (Exception e) {
+            throw e;
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //åˆ é™¤ä»»åŠ¡
+    @Override
+    public Msg deleteTask(String task_id) throws Exception {
+        int status=2;
+        Task task=taskMapper.findTaskByTaskId(task_id);
+        if(task==null){
+            status=1;
+        }
+        else{
+            task.setStatus(3);
+            try {
+                status=taskMapper.updateTask(task);
+                if(status==0){
+                    status=2;
+                }
+                else{
+                    status=0;
+                }
+            } catch (Exception e) {
+                throw e;
+            }
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //æŸ¥çœ‹å­¦ç”Ÿä»»åŠ¡ä¸­å¿ƒ
+    @Override
+    public TaskStuCenterList findStuCenterTask(String s_id) throws Exception {
+        List<Task> tasks=taskMapper.findTaskCenterByStu(s_id);
+        TaskStuCenterList tList=new TaskStuCenterList();
+        for(int i=0;i<tasks.size();i++){
+            Task task=tasks.get(i);
+            TaskStuCenterInf tInf=new TaskStuCenterInf(task);
+            tList.addTaskInf(tInf);
+        }
+        return tList;
+    }
+    //æœç´¢å­¦ç”Ÿä»»åŠ¡ä¸­å¿ƒ
+    @Override
+    public TaskStuCenterList getStuCenterTask(String s_id,String key) throws Exception {
+        List<Task> tasks=taskMapper.searchTaskCenterByStu(s_id,key);
+        TaskStuCenterList tList=new TaskStuCenterList();
+        for(int i=0;i<tasks.size();i++){
+            Task task=tasks.get(i);
+            TaskStuCenterInf tInf=new TaskStuCenterInf(task);
+            tList.addTaskInf(tInf);
+        }
+        return tList;
+    }
+    //æŸ¥çœ‹è€å¸ˆä»»åŠ¡ä¸­å¿ƒ
+    @Override
+    public TaskTchCenterList findTchCenterTask(String t_id) throws Exception {
+        List<Task> tasks=taskMapper.findTaskCenterByTch(t_id);
+        TaskTchCenterList tList=new TaskTchCenterList();
+        for(int i=0;i<tasks.size();i++){
+            Task task=tasks.get(i);
+            TaskTchCenterInf tInf=new TaskTchCenterInf(task);
+            tList.addTaskInf(tInf);
+        }
+        return tList;
+    }
+    //æœç´¢è€å¸ˆä»»åŠ¡ä¸­å¿ƒ
+    @Override
+    public TaskTchCenterList getTchCenterTask(String t_id,String key) throws Exception {
+        List<Task> tasks=taskMapper.searchTaskCenterByTch(t_id,key);
+        TaskTchCenterList tList=new TaskTchCenterList();
+        for(int i=0;i<tasks.size();i++){
+            Task task=tasks.get(i);
+            TaskTchCenterInf tInf=new TaskTchCenterInf(task);
+            tList.addTaskInf(tInf);
+        }
+        return tList;
+    }
+    //æŸ¥çœ‹å­¦ç”Ÿä»Šå¤©ä¸ªäººä»»åŠ¡åˆ—è¡¨
+    @Override
+    public TaskStuList findStuTodayTask(String s_id) throws Exception {
+        List<Task> tasks = taskMapper.findTodayTaskByStuId(s_id);
+        TaskStuList tList = new TaskStuList();
+        for (int i = 0; i < tasks.size(); i++) {
+            Task task = tasks.get(i);
+            int practice_time = 0;//è·å–å®Œæˆæ—¶é—´
+            int status = 0;//æœªå‘è¡¨
+            int duration_day = 0;//è¿ç»­æ‰“å¡å¤©æ•°
+            TaskStudent taskStudent = taskMapper.findTaskStuById(task.getTask_id(), s_id);
+            if (taskStudent != null) {
+                duration_day = taskStudent.getDuration_day();
+            }
+            TaskResult result = taskResultMapper.findTaskResultByStu(task.getTask_id(), s_id);
+            if (result != null) {
+                practice_time = result.getPractice_time();
+                status = result.getStatus();
+            }
+            TaskStuSimpleInf sInf = new TaskStuSimpleInf(task, practice_time, status, duration_day);
+            tList.addTaskInf(sInf);
+        }
+        return tList;
+    }
+    //æœç´¢å­¦ç”Ÿä»Šå¤©ä¸ªäººä»»åŠ¡åˆ—è¡¨
+    @Override
+    public TaskStuList getStuTodayTask(String s_id,String key) throws Exception {
+        List<Task> tasks = taskMapper.searchTodayTaskByStuId(s_id,key);
+        TaskStuList tList = new TaskStuList();
+        for (int i = 0; i < tasks.size(); i++) {
+            Task task = tasks.get(i);
+            int practice_time = 0;//è·å–å®Œæˆæ—¶é—´
+            int status = 0;//æœªå‘è¡¨
+            int duration_day = 0;//è¿ç»­æ‰“å¡å¤©æ•°
+            TaskStudent taskStudent = taskMapper.findTaskStuById(task.getTask_id(), s_id);
+            if (taskStudent != null) {
+                duration_day = taskStudent.getDuration_day();
+            }
+            TaskResult result = taskResultMapper.findTaskResultByStu(task.getTask_id(), s_id);
+            if (result != null) {
+                practice_time = result.getPractice_time();
+                status = result.getStatus();
+            }
+            TaskStuSimpleInf sInf = new TaskStuSimpleInf(task, practice_time, status, duration_day);
+            tList.addTaskInf(sInf);
+        }
+        return tList;
+    }
+    //æŸ¥çœ‹è€å¸ˆä»Šå¤©ä¸ªäººä»»åŠ¡åˆ—è¡¨
+    @Override
+    public TaskTchList findTchTodayTask(String t_id) throws Exception {
+        List<Task> tasks=taskMapper.findTodayTaskByTchId(t_id);
+        TaskTchList tList=new TaskTchList();
+        for(int i=0;i<tasks.size();i++){
+            Task task=tasks.get(i);
+            int finish_num=taskResultMapper.findTaskResultNumById(task.getTask_id());//è·å–ä»Šå¤©å®Œæˆäººæ•°
+            System.out.println(finish_num);
+            TaskTchSimpleInf tInf=new TaskTchSimpleInf(task,finish_num);
+            tList.addTaskInf(tInf);
+        }
+        return tList;
+    }
+    //æœç´¢è€å¸ˆä»Šå¤©ä¸ªäººä»»åŠ¡åˆ—è¡¨
+    @Override
+    public TaskTchList getTchTodayTask(String t_id,String key) throws Exception {
+    List<Task> tasks=taskMapper.searchTodayTaskByTchId(t_id,key);
+        TaskTchList tList=new TaskTchList();
+        for(int i=0;i<tasks.size();i++){
+            Task task=tasks.get(i);
+            int finish_num=taskResultMapper.findTaskResultNumById(task.getTask_id());//è·å–ä»Šå¤©å®Œæˆäººæ•°
+            System.out.println(finish_num);
+            TaskTchSimpleInf tInf=new TaskTchSimpleInf(task,finish_num);
+            tList.addTaskInf(tInf);
+        }
+        return tList;
+    }
+    //è€å¸ˆæŸ¥çœ‹å­¦ç”Ÿä»»åŠ¡åˆ—è¡¨
+    @Override
+    public TaskTchCenterList findStuTaskByTch(String t_id, String s_id) throws Exception {
+        List<Task> tasks=taskMapper.findStuTaskByTch(t_id, s_id);
+        TaskTchCenterList tList=new TaskTchCenterList();
+        for(int i = 0;i < tasks.size();i ++){
+            Task task=tasks.get(i);
+            TaskTchCenterInf tInf = new TaskTchCenterInf(task);
+            tList.addTaskInf(tInf);
+        }
+        return tList;
+    }
+    //å­¦ç”ŸæŸ¥çœ‹è€å¸ˆä»»åŠ¡åˆ—è¡¨
+    @Override
+    public TaskStuCenterList findTchTaskByStu(String t_id, String s_id) throws Exception {
+        List<Task> tasks=taskMapper.findTchTaskByStu(s_id, t_id);
+        TaskStuCenterList sList=new TaskStuCenterList();
+        for(int i=0;i<tasks.size();i++){
+            Task task=tasks.get(i);
+            TaskStuCenterInf tInf=new TaskStuCenterInf(task);
+            sList.addTaskInf(tInf);
+        }
+        return sList;
+    }
+    //æŸ¥çœ‹å®Œæˆæƒ…å†µ
+    @Override
+    public CheckTaskResultInf findTaskResultInf(String task_id, String s_id) throws Exception {
+        int status=1;
+        Task task=taskMapper.findTaskByTaskId(task_id);
+        TaskResult taskResult=taskResultMapper.findTaskResultByStu(task_id, s_id);
+        TaskResultInf taskResultInf;
+        if(task==null){
+            taskResultInf=new TaskResultInf();
+            status=1;
+        }
+        else{
+            if(taskResult==null){
+                String s=UUID.randomUUID().toString();
+                String id=s.substring(0,8)+s.substring(9,13)+s.substring(14,18)+s.substring(19,23)+s.substring(24);
+                taskResult=new TaskResult(id,s_id,task_id);
+                try {
+                    taskResultMapper.insertTaskResult(taskResult);
+                    status=0;
+                } catch (Exception e) {
+                    status=1;
+                    throw e;
+                }
+            }
+            else{
+                status=0;
+            }
+            taskResultInf=new TaskResultInf(task,taskResult);
+        }
+        CheckTaskResultInf checkTaskResultInf=new CheckTaskResultInf(status,taskResultInf);
+        return checkTaskResultInf;
+    }
+    //ç¼–è¾‘ä»»åŠ¡éš¾åº¦
+    public Msg updateTaskLevel(String task_id, String s_id, int level) throws Exception {
+        int status=1;
+        TaskStudent taskStudent=taskMapper.findTaskStuById(task_id, s_id);
+        if(taskStudent==null){
+            status=1;
+        }
+        else{
+            taskStudent.setDifficulty_level(level);
+            try {
+                status=taskMapper.updateTaskLevel(taskStudent);
+                if(status==0){
+                    status=1;
+                }
+                else{
+                    status=0;
+                }
+            } catch (Exception e) {
+                throw e;
+            }
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //æ›´æ–°ä»»åŠ¡å®Œæˆæƒ…å†µ
+    @Override
+    public Msg updateTaskResult(TaskResult taskResult) throws Exception {
+        int status=1;
+        try {
+            TaskResult result=taskResultMapper.findTaskResultById(taskResult.getTask_result_id());
+            result.setBasicInf(taskResult.getPractice_time(), taskResult.getSelf_score());
+            status=taskResultMapper.updateTaskResult(result);
+            if(status==0){
+                status=1;
+            }
+            else{
+                status=0;
+            }
+        } catch (Exception e) {
+            status=1;
+            throw e;
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //å‘è¡¨ä»»åŠ¡æƒ…å†µ
+    @Override
+    public Msg updateResultStatus(TaskResult taskResult) throws Exception {
+        int status = 1;
+        try {
+            TaskResult result = taskResultMapper.findTaskResultById(taskResult.getTask_result_id());
+            TaskStudent taskStudent = taskMapper.findTaskStuById(result.getTask_id(), result.getStudent_id());
+            //å…ˆè¿›è¡Œæ›´æ–°æ“ä½œï¼Œå¯¹è¡¨åŠ è¡Œçº§æ’ä»–é”ç›´åˆ°è¯¥äº‹åŠ¡ç»“æŸæ‰é‡Šæ”¾ï¼Œä»¥ä¿è¯åé¢å¯¹æ’åæ•°æ®çš„è¯»å–æ­£ç¡®
+            taskMapper.updateTaskClockNum(result.getTask_id());
+            Task task = taskMapper.findTaskByTaskId(result.getTask_id());
+            result.setPublishInf(taskResult.getFinish_photo(), taskResult.getComments(), task.getClock_num());
+            taskResultMapper.updateTaskResult(result);
+            taskMapper.updateStuClockDay(taskStudent);
+            status = boardMapper.updateResultStatus(taskResult.getTask_result_id());
+            if(status == 0){
+                status = 1;
+            }
+            else{
+                status = 0;
+            }
+        } catch (Exception e) {
+            status = 1;
+            throw e;
+        }
+        Msg msg = new Msg(status);
+        return msg;
+    }
+    //æŒ‰æ—¥æœŸæŸ¥çœ‹å­¦ç”Ÿä»»åŠ¡å®Œæˆæƒ…å†µ
+    @Override
+    public TaskResultList findTaskResultList(String task_id,String s_id) throws Exception {
+        int status = 1;
+        TaskResultList rList;
+        Task task = taskMapper.findTaskByTaskId(task_id);
+        Student stu = stuMapper.findStuById(s_id);
+        if (task != null&&task.getStatus() != 3&&stu != null) {
+            status = 0;
+            rList = new TaskResultList(status,task,stu);
+            List<TaskResult> taskResults = taskResultMapper.findTaskResultByDate(task_id, s_id);
+            for (int i = 0; i < taskResults.size(); i++) {
+                TaskResult taskResult = taskResults.get(i);
+                TaskResultSimpleInf tInf = new TaskResultSimpleInf(taskResult);
+                rList.addTaskResultInf(tInf);
+            }
+        }
+        else{
+            rList=new TaskResultList(status);
+        }
+        return rList;
+    }
+    //è€å¸ˆæŸ¥çœ‹å•ä¸ªä»»åŠ¡ä»Šæ—¥å®Œæˆæƒ…å†µ
+    @Override
+    public TaskResultTodayList findTaskTodayList(String task_id) throws Exception {
+        List<TaskResultTotalInf> totalInfs = taskResultMapper.findTaskResultByTch(task_id);
+        Collections.sort(totalInfs, new Comparator<TaskResultTotalInf>() {
+            @Override
+            public int compare(TaskResultTotalInf o1, TaskResultTotalInf o2) {
+                int flag = new Integer(o1.getClock_rank()).compareTo(new Integer(o2.getClock_rank()));//æ‰“å¡é¡ºåºæ¯”è¾ƒ
+                if (o1.getClock_rank() == 0 || o2.getClock_rank() == 0){
+                    flag = -flag;
+                }
+                if (flag == 0) {
+                    flag = new Integer(o2.getTotal_time()).compareTo(new Integer(o1.getTotal_time()));//æ€»å®Œæˆæ—¶é—´æ¯”è¾ƒ
+                }
+                if (flag == 0) {
+                    flag = new Float(o2.getSelf_score()).compareTo(new Float(o1.getSelf_score()));//ä¸ªäººè¯„åˆ†æ¯”è¾ƒ
+                }
+                return flag;
+            }
+        });
+        TaskResultTodayList todayList = new TaskResultTodayList(totalInfs);
+        return todayList;
+    }
+    //è€å¸ˆæŸ¥çœ‹ä»»åŠ¡æ¿
+    @Override
+    public TaskBoard findBoardForTch(String t_id, String last_time) throws Exception {
+        List<TaskResult> rList=boardMapper.findResultForTch(t_id, last_time);
+        TaskBoard taskBoard=new TaskBoard(rList);
+        return taskBoard;
+    }
+    //è€å¸ˆæŸ¥çœ‹æ˜¯å¦æœ‰æ–°ç»“æœ
+    @Override
+    public Msg findTchNewResult(String t_id, String last_time){
+        int status = 0;
+        TaskResult taskResult = null;
+        try {
+            taskResult = boardMapper.findNewResultForTch(t_id, last_time);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if(taskResult != null){
+            status = 1;
+        }
+        Msg msg = new Msg(status);
+        return msg;
+    }
+    //å­¦ç”ŸæŸ¥çœ‹ä»»åŠ¡æ¿
+    @Override
+    public TaskBoard findBoardForStu(String s_id, String last_time) throws Exception {
+        List<TaskResult> rList=boardMapper.findResultForStu(s_id, last_time);
+        TaskBoard taskBoard=new TaskBoard(rList);
+        return taskBoard;
+    }
+    //å­¦ç”ŸæŸ¥çœ‹æ˜¯å¦æœ‰æ–°ç»“æœ
+    @Override
+    public Msg findStuNewResult(String s_id, String last_time){
+        int status = 0;
+        TaskResult taskResult = null;
+        try {
+            taskResult = boardMapper.findNewResultForStu(s_id, last_time);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if(taskResult != null){
+            status = 1;
+        }
+        Msg msg = new Msg(status);
+        return msg;
+    }
+    //æ›´æ–°ç»“æœè€å¸ˆè¯„åˆ†
+    @Override
+    public Msg updateResultTchScore(String id,String t_id,float score) throws Exception {
+        int status=2;
+        try {
+            TaskResult result=taskResultMapper.findTaskResultById(id);
+            Task task=taskMapper.findTaskByTaskId(result.getTask_id());
+            if(!t_id.equals(task.getTeacher_id())){
+                status=1;
+                return new Msg(status);
+            }
+            result.setTch_score(score);
+            status=boardMapper.updateResultTchScore(result);
+            if(status==0){
+                status=2;
+            }
+            else{
+                status=0;
+            }
+        } catch (Exception e) {
+            status=2;
+            throw e;
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //æ›´æ–°ç»“æœè€å¸ˆè¯„è®º
+    @Override
+    public Msg updateResultTchComment(String id,String t_id,String comment) throws Exception {
+        int status=2;
+        try {
+            TaskResult result=taskResultMapper.findTaskResultById(id);
+            Task task=taskMapper.findTaskByTaskId(result.getTask_id());
+            if(!t_id.equals(task.getTeacher_id())){
+                status=1;
+                return new Msg(status);
+            }
+            result.setTch_comment(comment);
+            status=boardMapper.updateResultTchComment(result);
+            if(status==0){
+                status=2;
+            }
+            else{
+                status=0;
+            }
+        } catch (Exception e) {
+            status=2;
+            throw e;
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
 }

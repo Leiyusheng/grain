@@ -5,64 +5,64 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public interface VerifyCodeService {
-	/**
-	 * ·¢ËÍ¶ÌĞÅÑéÖ¤Âë
-	 * @param phone µç»°
-	 * @param code ÑéÖ¤Âë
-	 * @return 0³É¹¦£¬22Í¬Ò»¸öÊÖ»úºÅÑéÖ¤ÂëÀàÄÚÈİÃ¿Ìì×î¶àÄÜ»ñÈ¡µ½10Ìõ£¬33Í¬Ò»¸öÊÖ»úºÅÍ¬Ò»ÑéÖ¤ÂëÄ£°åÃ¿30ÃëÖ»ÄÜ·¢ËÍÒ»Ìõ£¬¸ü¶à·µ»ØÖµ¼ûÔÆÆ¬Íøapi
-	 */
-	public int sendSmsCode(String phone,String code);
-	/**
-	 * Ê¹ÓÃÏµÍ³Ä¬ÈÏ×Ö·ûÔ´Éú³ÉÑéÖ¤Âë
-	 * @param verifySize ÑéÖ¤Âë³¤¶È
-	 * @return ÑéÖ¤Âë
-	 */
-	public String generateVerifyCode(int verifySize);
-	/**
-	 * Ê¹ÓÃÖ¸¶¨Ô´Éú³ÉÑéÖ¤Âë
-	 * @param verifySize ÑéÖ¤Âë³¤¶È
-	 * @param sources ÑéÖ¤Âë×Ö·ûÔ´
-	 * @return ÑéÖ¤Âë
-	 */
-	public String generateVerifyCode(int verifySize, String sources);
-	/**
-	 * Éú³ÉËæ»úÑéÖ¤ÂëÎÄ¼ş,²¢·µ»ØÑéÖ¤ÂëÖµ
-	 * @param w Í¼Æ¬³¤
-	 * @param h Í¼Æ¬¿í
-	 * @param outputFile Ä¿±êÎÄ¼ş
-	 * @param verifySize ÑéÖ¤Âë³¤¶È
-	 * @return ÑéÖ¤Âë
-	 * @throws IOException
-	 */
-	public String outputVerifyImage(int w, int h, File outputFile, int verifySize) throws IOException;
-	/**
-	 * Êä³öËæ»úÑéÖ¤ÂëÍ¼Æ¬Á÷,²¢·µ»ØÑéÖ¤ÂëÖµ
-	 * @param w Í¼Æ¬³¤
-	 * @param h Í¼Æ¬¿í
-	 * @param os Êä³öÁ÷
-	 * @param verifySize ÑéÖ¤Âë³¤¶È
-	 * @return ÑéÖ¤Âë
-	 * @throws IOException
-	 */
-	public String outputVerifyImage(int w, int h, OutputStream os, int verifySize) throws IOException;
-	//Éú³ÉÖ¸¶¨ÑéÖ¤ÂëÍ¼ÏñÎÄ¼ş
-	/**
-	 * Éú³ÉÖ¸¶¨ÑéÖ¤ÂëÍ¼ÏñÎÄ¼ş
-	 * @param w Í¼Æ¬³¤
-	 * @param h Í¼Æ¬¿í
-	 * @param outputFile Êä³öÎÄ¼ş
-	 * @param code ÑéÖ¤Âë
-	 * @throws IOException
-	 */
-	public void outputImage(int w, int h, File outputFile, String code) throws IOException;
-	/**
-	 * Êä³öÖ¸¶¨ÑéÖ¤ÂëÍ¼Æ¬Á÷
-	 * @param w Í¼Æ¬³¤
-	 * @param h Í¼Æ¬¿í
-	 * @param os Êä³öÁ÷
-	 * @param code ÑéÖ¤Âë
-	 * @throws IOException
-	 */
-	public void outputImage(int w, int h, OutputStream os, String code) throws IOException;
-	
+    /**
+     * å‘é€çŸ­ä¿¡éªŒè¯ç 
+     * @param phone ç”µè¯
+     * @param code éªŒè¯ç 
+     * @return 0æˆåŠŸï¼Œ22åŒä¸€ä¸ªæ‰‹æœºå·éªŒè¯ç ç±»å†…å®¹æ¯å¤©æœ€å¤šèƒ½è·å–åˆ°10æ¡ï¼Œ33åŒä¸€ä¸ªæ‰‹æœºå·åŒä¸€éªŒè¯ç æ¨¡æ¿æ¯30ç§’åªèƒ½å‘é€ä¸€æ¡ï¼Œæ›´å¤šè¿”å›å€¼è§äº‘ç‰‡ç½‘api
+     */
+    public int sendSmsCode(String phone,String code);
+    /**
+     * ä½¿ç”¨ç³»ç»Ÿé»˜è®¤å­—ç¬¦æºç”ŸæˆéªŒè¯ç 
+     * @param verifySize éªŒè¯ç é•¿åº¦
+     * @return éªŒè¯ç 
+     */
+    public String generateVerifyCode(int verifySize);
+    /**
+     * ä½¿ç”¨æŒ‡å®šæºç”ŸæˆéªŒè¯ç 
+     * @param verifySize éªŒè¯ç é•¿åº¦
+     * @param sources éªŒè¯ç å­—ç¬¦æº
+     * @return éªŒè¯ç 
+     */
+    public String generateVerifyCode(int verifySize, String sources);
+    /**
+     * ç”ŸæˆéšæœºéªŒè¯ç æ–‡ä»¶,å¹¶è¿”å›éªŒè¯ç å€¼
+     * @param w å›¾ç‰‡é•¿
+     * @param h å›¾ç‰‡å®½
+     * @param outputFile ç›®æ ‡æ–‡ä»¶
+     * @param verifySize éªŒè¯ç é•¿åº¦
+     * @return éªŒè¯ç 
+     * @throws IOException
+     */
+    public String outputVerifyImage(int w, int h, File outputFile, int verifySize) throws IOException;
+    /**
+     * è¾“å‡ºéšæœºéªŒè¯ç å›¾ç‰‡æµ,å¹¶è¿”å›éªŒè¯ç å€¼
+     * @param w å›¾ç‰‡é•¿
+     * @param h å›¾ç‰‡å®½
+     * @param os è¾“å‡ºæµ
+     * @param verifySize éªŒè¯ç é•¿åº¦
+     * @return éªŒè¯ç 
+     * @throws IOException
+     */
+    public String outputVerifyImage(int w, int h, OutputStream os, int verifySize) throws IOException;
+    //ç”ŸæˆæŒ‡å®šéªŒè¯ç å›¾åƒæ–‡ä»¶
+    /**
+     * ç”ŸæˆæŒ‡å®šéªŒè¯ç å›¾åƒæ–‡ä»¶
+     * @param w å›¾ç‰‡é•¿
+     * @param h å›¾ç‰‡å®½
+     * @param outputFile è¾“å‡ºæ–‡ä»¶
+     * @param code éªŒè¯ç 
+     * @throws IOException
+     */
+    public void outputImage(int w, int h, File outputFile, String code) throws IOException;
+    /**
+     * è¾“å‡ºæŒ‡å®šéªŒè¯ç å›¾ç‰‡æµ
+     * @param w å›¾ç‰‡é•¿
+     * @param h å›¾ç‰‡å®½
+     * @param os è¾“å‡ºæµ
+     * @param code éªŒè¯ç 
+     * @throws IOException
+     */
+    public void outputImage(int w, int h, OutputStream os, String code) throws IOException;
+    
 }

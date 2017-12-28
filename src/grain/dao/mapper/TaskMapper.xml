@@ -18,13 +18,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
      </select>
      
      <insert id="insertTask" parameterType="task">
-         INSERT INTO task 
-         VALUES(#{task_id},#{teacher_id},#{task_logo},#{task_name},
-         #{difficulty_level},#{start_date},#{end_date},#{task_info},#{status},#{total_num})
+         INSERT INTO task(task_id, teacher_id, task_logo, task_name, 
+         difficulty_level, start_date, end_date, task_info, status, total_num) 
+         VALUES(#{task_id}, #{teacher_id}, #{task_logo}, #{task_name},
+         #{difficulty_level}, #{start_date}, #{end_date}, #{task_info}, #{status}, #{total_num})
      </insert>
      
      <insert id="insertTaskStu" parameterType="taskStudent">
-         INSERT INTO taskstudent VALUES(#{task_id},#{student_id},#{difficulty_level})
+         INSERT INTO taskstudent(task_id,student_id,difficulty_level) 
+         VALUES(#{task_id},#{student_id},#{difficulty_level})
      </insert>
      
      <delete id="deleteTaskStu">
@@ -34,23 +36,37 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
      <update id="updateTaskStuCount">
          UPDATE task SET 
          <if test="status==1">
-             total_num=total_num+1
+             total_num = total_num+1
          </if>
          <if test="status==0">
-             total_num=total_num-1
+             total_num = total_num-1
          </if>
-         WHERE task_id=#{task_id}
+         WHERE task_id = #{task_id}
      </update>
      
      <select id="findTaskStuList" parameterType="String"
          resultType="student">
          SELECT student.* FROM student,taskstudent 
-         WHERE task_id=#{value} AND student.student_id=taskstudent.student_id
+         WHERE task_id = #{value} AND student.student_id=taskstudent.student_id
      </select>
      
      <select id="findTaskStuById" resultType="taskStudent">
          SELECT * FROM taskstudent WHERE task_id=#{task_id} AND student_id=#{s_id}
      </select>
+     
+     <update id="updateStuClockDay" parameterType = "taskStudent">
+         UPDATE taskstudent SET
+         <choose>
+             <when test="duration_day > 0">
+                 duration_day = duration_day + 1,
+             </when>
+             <otherwise>
+                 duration_day = 1,
+             </otherwise>
+         </choose>
+         clocked = 1, total_day = total_day + 1
+         WHERE task_id = #{task_id} AND student_id=#{student_id}
+     </update>
      
      <update id="updateTaskLevel" parameterType="taskStudent">
          UPDATE taskstudent SET 
@@ -63,6 +79,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          task_logo=#{task_logo},task_name=#{task_name},difficulty_level=#{difficulty_level},
          start_date=#{start_date},end_date=#{end_date},task_info=#{task_info},`status`=#{status}
          WHERE task_id=#{task_id}
+     </update>
+     
+     <update id="updateTaskClockNum" parameterType="String">
+         UPDATE task SET
+         clock_num = clock_num + 1
+         WHERE task_id = #{task_id}
      </update>
      
      <select id="findTaskCenterByStu" parameterType="String"

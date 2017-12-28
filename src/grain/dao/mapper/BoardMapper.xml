@@ -16,51 +16,52 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
      -->
      
      <!-- 
-     	SELECT student.student_name,student.head_logo,task_name,task.task_logo,taskresult.*,praise.praise_status 
-     	FROM task,student,taskresult LEFT JOIN praise  
-     	ON taskresult.task_result_id=praise.task_result_id AND praise.person_id=#{t_id}
-	 	WHERE teacher_id=#{t_id} AND task.task_id=taskresult.task_id
-	 	AND student.student_id=taskresult.student_id 
-	 	AND #{last_time}>publish_time AND taskresult.status=1
-	 	ORDER BY publish_time DESC LIMIT 5 
-	 -->
+         SELECT student.student_name,student.head_logo,task_name,task.task_logo,taskresult.*,praise.praise_status 
+         FROM task,student,taskresult LEFT JOIN praise  
+         ON taskresult.task_result_id=praise.task_result_id AND praise.person_id=#{t_id}
+         WHERE teacher_id=#{t_id} AND task.task_id=taskresult.task_id
+         AND student.student_id=taskresult.student_id 
+         AND #{last_time}>publish_time AND taskresult.status=1
+         ORDER BY publish_time DESC LIMIT 5 
+     -->
      <select id="findResultForTch" resultType="taskResult">
          SELECT taskboard.*,praise_status 
          FROM contact,taskboard LEFT JOIN praise  
-     	 ON taskboard.task_result_id=praise.task_result_id AND praise.person_id=#{t_id}
-		 WHERE taskboard.teacher_id=#{t_id} 
-		 AND contact.teacher_id=taskboard.teacher_id AND contact.student_id=taskboard.student_id AND contact.`status`=1
-		 AND #{last_time}>publish_time 
-		 LIMIT 5
+         ON taskboard.task_result_id=praise.task_result_id AND praise.person_id=#{t_id}
+         WHERE taskboard.teacher_id=#{t_id} 
+         AND contact.teacher_id=taskboard.teacher_id AND contact.student_id=taskboard.student_id AND contact.`status`=1
+         AND #{last_time}>publish_time 
+         ORDER BY publish_time DESC
+         LIMIT 5
      </select>
      
      <select id="findNewResultForTch" resultType="taskResult">
-         SELECT taskresult.* 
-         FROM task,taskresult,contact 
-		 WHERE task.teacher_id=#{t_id} AND task.task_id=taskresult.task_id
-		 AND contact.teacher_id=task.teacher_id AND contact.student_id=taskresult.student_id AND contact.`status`=1
-		 AND publish_time>#{last_time} AND taskresult.status=1
-		 ORDER BY publish_time DESC
-		 LIMIT 1
+        SELECT taskresult.* 
+        FROM task,taskresult,contact 
+        WHERE task.teacher_id=#{t_id} AND task.task_id=taskresult.task_id
+        AND contact.teacher_id=task.teacher_id AND contact.student_id=taskresult.student_id AND contact.`status`=1
+        AND publish_time>#{last_time} AND taskresult.status=1
+        ORDER BY publish_time DESC
+        LIMIT 1
      </select>
      
      <!-- 
      	SELECT student.student_name,student.head_logo,task_name,task.task_logo,taskresult.*,praise.praise_status 
         FROM contact,student,task,taskresult LEFT JOIN praise
         ON taskresult.task_result_id=praise.task_result_id AND praise.person_id=#{s_id}
-		WHERE contact.student_id=#{s_id} AND contact.status=1 AND contact.teacher_id=task.teacher_id 
-		AND task.task_id=taskresult.task_id AND taskresult.student_id=student.student_id 
-		AND #{last_time}>publish_time AND taskresult.status=1 
-		AND (access_permission=1 OR taskresult.student_id=#{s_id})
-		ORDER BY publish_time DESC LIMIT 5
+        WHERE contact.student_id=#{s_id} AND contact.status=1 AND contact.teacher_id=task.teacher_id 
+        AND task.task_id=taskresult.task_id AND taskresult.student_id=student.student_id 
+        AND #{last_time}>publish_time AND taskresult.status=1 
+        AND (access_permission=1 OR taskresult.student_id=#{s_id})
+        ORDER BY publish_time DESC LIMIT 5
       -->
-     <select id="findResultForStu" resultType="taskResult">
-         SELECT taskboard.*,praise_status FROM contact,taskboard LEFT JOIN praise  
-     	 ON taskboard.task_result_id=praise.task_result_id AND praise.person_id=#{s_id}
-		 WHERE contact.student_id=#{s_id}
-		 AND contact.teacher_id=taskboard.teacher_id 
-		 AND ((contact.`status`=1 AND access_permission=1) OR taskboard.student_id=#{s_id} )
-		 AND #{last_time}>publish_time LIMIT 5
+     <!-- <select id="findResultForStu" resultType="taskResult">
+        SELECT taskboard.*,praise_status FROM contact,taskboard LEFT JOIN praise  
+        ON taskboard.task_result_id=praise.task_result_id AND praise.person_id=#{s_id}
+        WHERE contact.student_id=#{s_id}
+        AND contact.teacher_id=taskboard.teacher_id 
+        AND ((contact.`status`=1 AND access_permission=1) OR taskboard.student_id=#{s_id} )
+        AND #{last_time}>publish_time LIMIT 5
      </select>
      
      <select id="findNewResultForStu" resultType="taskResult">
@@ -72,6 +73,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		 AND (access_permission=1 OR taskresult.student_id=#{s_id})
 		 ORDER BY publish_time DESC
 		 LIMIT 1
+     </select> -->
+     
+     <select id="findResultForStu" resultType="taskResult">
+         SELECT DISTINCT taskboard.*,praise_status FROM taskstudent,taskboard LEFT JOIN praise  
+         ON taskboard.task_result_id = praise.task_result_id AND praise.person_id = #{s_id}
+         WHERE taskstudent.student_id = #{s_id} AND ((taskstudent.task_id = taskboard.task_id
+         AND access_permission=1) OR taskboard.student_id=#{s_id})
+         AND #{last_time}>publish_time 
+         ORDER BY publish_time DESC 
+         LIMIT 5
+     </select>
+     
+     <select id="findNewResultForStu" resultType="taskResult">
+         SELECT DISTINCT taskresult.* FROM taskstudent,student,taskresult
+         WHERE taskstudent.student_id = #{s_id} AND taskresult.status=1 
+         AND ((taskstudent.task_id = taskresult.task_id AND taskresult.student_id=student.student_id 
+         AND access_permission=1) OR taskresult.student_id=#{s_id})
+         AND publish_time>#{last_time} 
+         ORDER BY publish_time DESC
+         LIMIT 1
      </select>
      
      <update id="updateResultStatus" parameterType="String">

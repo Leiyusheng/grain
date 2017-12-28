@@ -8,14 +8,15 @@ public class TaskStuSimpleInf {
 	private String task_logo;
 	private String task_id;
 	private String task_name;
-	private int level;
+	private int level;//任务难度
 	private String info;
 	private int practice_time;
-	private int status;
+	private int status;//今日任务完成状态
+	private int duration_day;//连续打卡天数
 	
 	public TaskStuSimpleInf() {}
 	
-	public TaskStuSimpleInf(Task task, int practice_time, int status) {
+	public TaskStuSimpleInf(Task task, int practice_time, int status, int duration_day) {
 		this.t_id = task.getTeacher_id();
 		this.t_name = task.getTeacher_name();
 		this.task_logo = task.getTask_logo();
@@ -25,6 +26,7 @@ public class TaskStuSimpleInf {
 		this.info = task.getTask_info();
 		this.practice_time = practice_time;
 		this.status = status;
+		this.duration_day = duration_day;
 	}
 
 	public String getT_id() {
@@ -81,12 +83,18 @@ public class TaskStuSimpleInf {
 	public void setStatus(int status) {
 		this.status = status;
 	}
+	public int getDuration_day() {
+        return duration_day;
+    }
+    public void setDuration_day(int duration_day) {
+        this.duration_day = duration_day;
+    }
 
-	@Override
-	public String toString() {
-		return "TaskStuSimpleInf [t_id=" + t_id + ", t_name=" + t_name + ", task_logo=" + task_logo + ", task_id="
-				+ task_id + ", task_name=" + task_name + ", level=" + level + ", info=" + info + ", practice_time="
-				+ practice_time + ", status=" + status + "]";
-	}
+    @Override
+    public String toString() {
+        return "TaskStuSimpleInf [t_id=" + t_id + ", t_name=" + t_name + ", task_logo=" + task_logo + ", task_id="
+                + task_id + ", task_name=" + task_name + ", level=" + level + ", info=" + info + ", practice_time="
+                + practice_time + ", status=" + status + ", duration_day=" + duration_day + "]";
+    }
 	
 }

@@ -11,11 +11,11 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializerProvider;
 import org.codehaus.jackson.map.ser.CustomSerializerFactory;
 /**
- * 控制返回json对象中日期类型的格式
+ * 鎺у埗杩斿洖json瀵硅薄涓棩鏈熺被鍨嬬殑鏍煎紡
  */
 public class JsonDateObjectMapper extends ObjectMapper{
-	public JsonDateObjectMapper() {
-		CustomSerializerFactory factory = new CustomSerializerFactory();  
+    public JsonDateObjectMapper() {
+        CustomSerializerFactory factory = new CustomSerializerFactory();  
         factory.addGenericMapping(Date.class, new JsonSerializer<Date>(){  
             @Override  
             public void serialize(Date value,   
@@ -27,5 +27,5 @@ public class JsonDateObjectMapper extends ObjectMapper{
             }  
         });  
         this.setSerializerFactory(factory);
-	}
+    }
 }

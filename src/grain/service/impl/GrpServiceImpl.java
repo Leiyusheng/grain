@@ -16,108 +16,108 @@ import grain.po.Student;
 import grain.service.GrpService;
 
 public class GrpServiceImpl implements GrpService {
-	@Autowired
-	private GrpMapper grpMapper;
-	@Autowired
-	private CtctMapper ctctMapper;
-	//ĞŞ¸Ä·Ö×éÃû
-	@Override
-	public Msg updateGrpName(String t_id,String g_id, String g_name) throws Exception {
-		int status=2;
-		Group group=grpMapper.findGroupByName(t_id,g_name);//ÅĞ¶Ï·Ö×éÃûÊÇ·ñÖØ¸´
-		if(group==null){
-			group=grpMapper.findDefaultGroupById(g_id);//ÕÒ³ö¸Ãid¶ÔÓ¦µÄ·Ö×é
-			if(!group.getGroup_id().equals(group.getTeacher_id())){
-				try {
-					status=grpMapper.updateGroupName(g_id, g_name);
-					if(status==0){
-						status=2;
-					}
-					else{
-						status=0;
-					}
-				} catch (Exception e) {
-					status=2;
-					throw e;
-				}
-			}
-		}
-		else{
-			status=1;
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//ĞŞ¸Ä·Ö×éÑ§Éú
-	@Override
-	public Msg updateGrpStu(String g_id, List<String> s_ids) throws Exception {
-		int status=1;
-		List<Student> students=grpMapper.findGroupStu(g_id);//»ñÈ¡¸Ã·Ö×éÔ­À´µÄÑ§Éú
-		Group group=grpMapper.findDefaultGroupById(g_id);//ÕÒ³ö¸Ãid¶ÔÓ¦µÄ·Ö×é
-		for(int i=0;i<s_ids.size();i++){
-			int stu_status=1;//¸ÃÑ§Éú×´Ì¬£¬1ÎªĞÂÔö£¬0ÎªÔ­ÓĞ
-			String n_s_id=s_ids.get(i);//ĞÂµÄ·Ö×éÑ§Éúid
-			Contact contact=ctctMapper.findContactById(group.getTeacher_id(), n_s_id);
-			if(contact!=null&&contact.getStatus()==1){//ÅĞ¶Ï¸ÃÑ§ÉúÊÇ·ñÊôÓÚ¸ÃÀÏÊ¦
-				for(int j=0;j<students.size();j++){
-					String o_s_id=students.get(j).getStudent_id();//¾ÉµÄ·Ö×éÑ§Éúid
-					if(n_s_id.equals(o_s_id)){
-						stu_status=0;//¸ÃÑ§ÉúÒÑ´æÔÚ
-						students.remove(j--);//ÒÆ³ı·Ö×éÔ­À´µÄÑ§ÉúÖĞÈÎÈ»´æÔÚµÄ
-						break;
-					}
-				}
-				if(stu_status==1){
-					try {
-						grpMapper.insertGroupStu(g_id, n_s_id);
-						grpMapper.updateGroupStuCount(1, g_id);
-					} catch (DuplicateKeyException e1) {
-						//¼ÓÈëÒÑÓĞÑ§ÉúÔòÌø¹ı
-					} catch (Exception e) {
-						throw e;
-					} 
-				}
-			}
-		}
-		for(int i=0;i<students.size();i++){
-			String s_id=students.get(i).getStudent_id();
-			try {
-				grpMapper.deleteGroupStu(g_id, s_id);
-				grpMapper.updateGroupStuCount(0, g_id);
-			} catch (Exception e) {
-				throw e;
-			} 
-		}
-		status=0;
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//É¾³ı·Ö×éÄ³Ñ§Éú
-	public Msg deleteGrpStu(String g_id, String s_id) throws Exception {
-		int status=1;
-		Group group=grpMapper.findDefaultGroupById(g_id);//ÕÒ³ö¸Ãid¶ÔÓ¦µÄ·Ö×é
-		if(!group.getGroup_id().equals(group.getTeacher_id())){
-			try {
-				grpMapper.deleteGroupStu(g_id, s_id);
-				grpMapper.updateGroupStuCount(0, g_id);
-				status=0;
-			} catch (Exception e) {
-				throw e;
-			} 
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//²é¿´·Ö×éÑ§Éú
-	@Override
-	public StudentList findGrpStu(String g_id) throws Exception {
-		List<Student> students=grpMapper.findGroupStu(g_id);
-		StudentList sList=new StudentList();
-		for(int i=0;i<students.size();i++){
-		    Student stu=students.get(i);
-		    StuSimpleInf sInfo=new StuSimpleInf(stu);
-		    sList.addStuInfo(sInfo);
-		}
-		return sList;
-	}
+    @Autowired
+    private GrpMapper grpMapper;
+    @Autowired
+    private CtctMapper ctctMapper;
+    //ä¿®æ”¹åˆ†ç»„å
+    @Override
+    public Msg updateGrpName(String t_id,String g_id, String g_name) throws Exception {
+        int status=2;
+        Group group=grpMapper.findGroupByName(t_id,g_name);//åˆ¤æ–­åˆ†ç»„åæ˜¯å¦é‡å¤
+        if(group==null){
+            group=grpMapper.findDefaultGroupById(g_id);//æ‰¾å‡ºè¯¥idå¯¹åº”çš„åˆ†ç»„
+            if(!group.getGroup_id().equals(group.getTeacher_id())){
+                try {
+                    status=grpMapper.updateGroupName(g_id, g_name);
+                    if(status==0){
+                        status=2;
+                    }
+                    else{
+                        status=0;
+                    }
+                } catch (Exception e) {
+                    status=2;
+                    throw e;
+                }
+            }
+        }
+        else{
+            status=1;
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //ä¿®æ”¹åˆ†ç»„å­¦ç”Ÿ
+    @Override
+    public Msg updateGrpStu(String g_id, List<String> s_ids) throws Exception {
+        int status=1;
+        List<Student> students=grpMapper.findGroupStu(g_id);//è·å–è¯¥åˆ†ç»„åŸæ¥çš„å­¦ç”Ÿ
+        Group group=grpMapper.findDefaultGroupById(g_id);//æ‰¾å‡ºè¯¥idå¯¹åº”çš„åˆ†ç»„
+        for(int i=0;i<s_ids.size();i++){
+            int stu_status=1;//è¯¥å­¦ç”ŸçŠ¶æ€ï¼Œ1ä¸ºæ–°å¢ï¼Œ0ä¸ºåŸæœ‰
+            String n_s_id=s_ids.get(i);//æ–°çš„åˆ†ç»„å­¦ç”Ÿid
+            Contact contact=ctctMapper.findContactById(group.getTeacher_id(), n_s_id);
+            if(contact!=null&&contact.getStatus()==1){//åˆ¤æ–­è¯¥å­¦ç”Ÿæ˜¯å¦å±äºè¯¥è€å¸ˆ
+                for(int j=0;j<students.size();j++){
+                    String o_s_id=students.get(j).getStudent_id();//æ—§çš„åˆ†ç»„å­¦ç”Ÿid
+                    if(n_s_id.equals(o_s_id)){
+                        stu_status=0;//è¯¥å­¦ç”Ÿå·²å­˜åœ¨
+                        students.remove(j--);//ç§»é™¤åˆ†ç»„åŸæ¥çš„å­¦ç”Ÿä¸­ä»»ç„¶å­˜åœ¨çš„
+                        break;
+                    }
+                }
+                if(stu_status==1){
+                    try {
+                        grpMapper.insertGroupStu(g_id, n_s_id);
+                        grpMapper.updateGroupStuCount(1, g_id);
+                    } catch (DuplicateKeyException e1) {
+                        //åŠ å…¥å·²æœ‰å­¦ç”Ÿåˆ™è·³è¿‡
+                    } catch (Exception e) {
+                        throw e;
+                    } 
+                }
+            }
+        }
+        for(int i=0;i<students.size();i++){
+            String s_id=students.get(i).getStudent_id();
+            try {
+                grpMapper.deleteGroupStu(g_id, s_id);
+                grpMapper.updateGroupStuCount(0, g_id);
+            } catch (Exception e) {
+                throw e;
+            } 
+        }
+        status=0;
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //åˆ é™¤åˆ†ç»„æŸå­¦ç”Ÿ
+    public Msg deleteGrpStu(String g_id, String s_id) throws Exception {
+        int status=1;
+        Group group=grpMapper.findDefaultGroupById(g_id);//æ‰¾å‡ºè¯¥idå¯¹åº”çš„åˆ†ç»„
+        if(!group.getGroup_id().equals(group.getTeacher_id())){
+            try {
+                grpMapper.deleteGroupStu(g_id, s_id);
+                grpMapper.updateGroupStuCount(0, g_id);
+                status=0;
+            } catch (Exception e) {
+                throw e;
+            } 
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //æŸ¥çœ‹åˆ†ç»„å­¦ç”Ÿ
+    @Override
+    public StudentList findGrpStu(String g_id) throws Exception {
+        List<Student> students=grpMapper.findGroupStu(g_id);
+        StudentList sList=new StudentList();
+        for(int i=0;i<students.size();i++){
+            Student stu=students.get(i);
+            StuSimpleInf sInfo=new StuSimpleInf(stu);
+            sList.addStuInfo(sInfo);
+        }
+        return sList;
+    }
 }

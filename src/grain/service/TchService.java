@@ -7,136 +7,136 @@ import grain.dto.GroupList;
 import grain.dto.Msg;
 
 public interface TchService {
-	/**
-	 * Í¨¹ıµç»°²éÕÒÀÏÊ¦
-	 * @param s_id Ñ§Éúid
-	 * @param phone ÀÏÊ¦µç»°
-	 * @return CheckSearchInf ¸ÃÀÏÊ¦µÄ²éÕÒĞÅÏ¢
-	 * @throws Exception
-	 */
-	public CheckSearchInf findTchByPhone(String s_id,String phone)throws Exception;
-	/**
-	 * ²é¿´ÀÏÊ¦ĞÅÏ¢
-	 * @param t_id ÀÏÊ¦id
-	 * @return CheckTchInf ÀÏÊ¦¸öÈËĞÅÏ¢
-	 * @throws Exception
-	 */
-	public CheckTchInf findTchInf(String t_id)throws Exception;
-	/**
-	 * ĞŞ¸ÄÀÏÊ¦Ãû
-	 * @param t_id ÀÏÊ¦id
-	 * @param t_name ÀÏÊ¦Ãû
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateTchName(String t_id,String t_name)throws Exception;
-	/**
-	 * ĞŞ¸ÄÀÏÊ¦Í·Ïñ
-	 * @param t_id ÀÏÊ¦id
-	 * @param logo Í·ÏñÍ¼Æ¬Â·¾¶
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateTchLogo(String t_id,String logo)throws Exception;
-	/**
-	 * ĞŞ¸ÄÀÏÊ¦ĞÔ±ğ
-	 * @param t_id ÀÏÊ¦id
-	 * @param gender ÀÏÊ¦ĞÔ±ğ
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateTchGender(String t_id,int gender)throws Exception;
-	/**
-	 * ĞŞ¸ÄÀÏÊ¦ÉúÈÕ
-	 * @param t_id ÀÏÊ¦id
-	 * @param birthday ÀÏÊ¦ÉúÈÕ
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateTchBirthday(String t_id,String birthday)throws Exception;
-	/**
-	 * ĞŞ¸ÄÀÏÊ¦Ç©Ãû
-	 * @param t_id ÀÏÊ¦id
-	 * @param sign ÀÏÊ¦Ç©Ãû
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateTchSign(String t_id,String sign)throws Exception;
-	/**
-	 * ĞŞ¸ÄÀÏÊ¦±¸×¢
-	 * @param t_id ÀÏÊ¦id
-	 * @param inf ÀÏÊ¦±¸×¢
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateTchInf(String t_id,String inf)throws Exception;
-	/**
-	 * ĞŞ¸ÄÀÏÊ¦¸öÈËÖ÷Ò³±³¾°
-	 * @param t_id ÀÏÊ¦id
-	 * @param home_pic ±³¾°Í¼Æ¬Â·¾¶
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateTchHomePic(String t_id,String home_pic)throws Exception;
-	/**
-	 * ĞŞ¸ÄÀÏÊ¦ÈÎÎñ°å±³¾°
-	 * @param t_id ÀÏÊ¦id
-	 * @param board_pic ±³¾°Í¼Æ¬Â·¾¶
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateTchBoardPic(String t_id,String board_pic)throws Exception;
-	/**
-	 * ¸üĞÂ¶ÔÑ§ÉúµÄÉêÇë
-	 * @param s_id Ñ§Éúid
-	 * @param t_id ÀÏÊ¦id
-	 * @param info ÉêÇë±¸×¢
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateStuApply(String s_id,String t_id,String info)throws Exception;
-	/**
-	 * ²é¿´ÀÏÊ¦µÄÉêÇë¼ÇÂ¼
-	 * @param t_id ÀÏÊ¦id
-	 * @return ApplyList ÉêÇëÁĞ±í
-	 * @throws Exception
-	 */
-	public ApplyList findApplyList(String t_id)throws Exception;
-	/**
-	 * É¾³ıÉêÇë¼ÇÂ¼
-	 * @param t_id ÀÏÊ¦id
-	 * @param s_id Ñ§Éúid
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg deleteApply(String t_id,String s_id)throws Exception;
-	/**
-	 * ²é¿´ÊÇ·ñÓĞĞÂµÄÑ§ÉúÉêÇë¼ÇÂ¼
-	 * @param t_id ÀÏÊ¦id
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg findWhetherStuApply(String t_id)throws Exception;
-	/**
-	 * ²é¿´ÀÏÊ¦·Ö×éÁĞ±í
-	 * @param t_id ÀÏÊ¦id
-	 * @return GroupList ·Ö×éÁĞ±í
-	 * @throws Exception
-	 */
-	public GroupList findGroupListById(String t_id)throws Exception;
-	/**
-	 * ĞÂ½¨·Ö×é
-	 * @param t_id ÀÏÊ¦id
-	 * @param grp_name ĞÂ·Ö×éÃû
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1·Ö×éÃû´æÔÚ£¬2ÆäËû
-	 * @throws Exception
-	 */
-	public Msg insertGroup(String t_id,String grp_name)throws Exception;
-	/**
-	 * É¾³ı·Ö×é
-	 * @param g_id ·Ö×éid
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg deleteGroup(String g_id)throws Exception;
+    /**
+     * é€šè¿‡ç”µè¯æŸ¥æ‰¾è€å¸ˆ
+     * @param s_id å­¦ç”Ÿid
+     * @param phone è€å¸ˆç”µè¯
+     * @return CheckSearchInf è¯¥è€å¸ˆçš„æŸ¥æ‰¾ä¿¡æ¯
+     * @throws Exception
+     */
+    public CheckSearchInf findTchByPhone(String s_id,String phone)throws Exception;
+    /**
+     * æŸ¥çœ‹è€å¸ˆä¿¡æ¯
+     * @param t_id è€å¸ˆid
+     * @return CheckTchInf è€å¸ˆä¸ªäººä¿¡æ¯
+     * @throws Exception
+     */
+    public CheckTchInf findTchInf(String t_id)throws Exception;
+    /**
+     * ä¿®æ”¹è€å¸ˆå
+     * @param t_id è€å¸ˆid
+     * @param t_name è€å¸ˆå
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateTchName(String t_id,String t_name)throws Exception;
+    /**
+     * ä¿®æ”¹è€å¸ˆå¤´åƒ
+     * @param t_id è€å¸ˆid
+     * @param logo å¤´åƒå›¾ç‰‡è·¯å¾„
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateTchLogo(String t_id,String logo)throws Exception;
+    /**
+     * ä¿®æ”¹è€å¸ˆæ€§åˆ«
+     * @param t_id è€å¸ˆid
+     * @param gender è€å¸ˆæ€§åˆ«
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateTchGender(String t_id,int gender)throws Exception;
+    /**
+     * ä¿®æ”¹è€å¸ˆç”Ÿæ—¥
+     * @param t_id è€å¸ˆid
+     * @param birthday è€å¸ˆç”Ÿæ—¥
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateTchBirthday(String t_id,String birthday)throws Exception;
+    /**
+     * ä¿®æ”¹è€å¸ˆç­¾å
+     * @param t_id è€å¸ˆid
+     * @param sign è€å¸ˆç­¾å
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateTchSign(String t_id,String sign)throws Exception;
+    /**
+     * ä¿®æ”¹è€å¸ˆå¤‡æ³¨
+     * @param t_id è€å¸ˆid
+     * @param inf è€å¸ˆå¤‡æ³¨
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateTchInf(String t_id,String inf)throws Exception;
+    /**
+     * ä¿®æ”¹è€å¸ˆä¸ªäººä¸»é¡µèƒŒæ™¯
+     * @param t_id è€å¸ˆid
+     * @param home_pic èƒŒæ™¯å›¾ç‰‡è·¯å¾„
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateTchHomePic(String t_id,String home_pic)throws Exception;
+    /**
+     * ä¿®æ”¹è€å¸ˆä»»åŠ¡æ¿èƒŒæ™¯
+     * @param t_id è€å¸ˆid
+     * @param board_pic èƒŒæ™¯å›¾ç‰‡è·¯å¾„
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateTchBoardPic(String t_id,String board_pic)throws Exception;
+    /**
+     * æ›´æ–°å¯¹å­¦ç”Ÿçš„ç”³è¯·
+     * @param s_id å­¦ç”Ÿid
+     * @param t_id è€å¸ˆid
+     * @param info ç”³è¯·å¤‡æ³¨
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å·²æ·»åŠ ï¼Œ2è€å¸ˆä¸å­˜åœ¨ï¼Œ3å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateStuApply(String s_id,String t_id,String info)throws Exception;
+    /**
+     * æŸ¥çœ‹è€å¸ˆçš„ç”³è¯·è®°å½•
+     * @param t_id è€å¸ˆid
+     * @return ApplyList ç”³è¯·åˆ—è¡¨
+     * @throws Exception
+     */
+    public ApplyList findApplyList(String t_id)throws Exception;
+    /**
+     * åˆ é™¤ç”³è¯·è®°å½•
+     * @param t_id è€å¸ˆid
+     * @param s_id å­¦ç”Ÿid
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg deleteApply(String t_id,String s_id)throws Exception;
+    /**
+     * æŸ¥çœ‹æ˜¯å¦æœ‰æ–°çš„å­¦ç”Ÿç”³è¯·è®°å½•
+     * @param t_id è€å¸ˆid
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg findWhetherStuApply(String t_id)throws Exception;
+    /**
+     * æŸ¥çœ‹è€å¸ˆåˆ†ç»„åˆ—è¡¨
+     * @param t_id è€å¸ˆid
+     * @return GroupList åˆ†ç»„åˆ—è¡¨
+     * @throws Exception
+     */
+    public GroupList findGroupListById(String t_id)throws Exception;
+    /**
+     * æ–°å»ºåˆ†ç»„
+     * @param t_id è€å¸ˆid
+     * @param grp_name æ–°åˆ†ç»„å
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1åˆ†ç»„åå­˜åœ¨ï¼Œ2å…¶ä»–
+     * @throws Exception
+     */
+    public Msg insertGroup(String t_id,String grp_name)throws Exception;
+    /**
+     * åˆ é™¤åˆ†ç»„
+     * @param g_id åˆ†ç»„id
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg deleteGroup(String g_id)throws Exception;
 }

@@ -24,9 +24,13 @@ public interface TaskMapper {
 	
 	public TaskStudent findTaskStuById(@Param("task_id")String task_id,@Param("s_id")String s_id)throws Exception;
 	
+	public int updateStuClockDay(TaskStudent taskStudent)throws Exception;
+	
 	public int updateTaskLevel(TaskStudent taskStudent)throws Exception;
 	
 	public int updateTask(Task task)throws Exception;
+	
+	public int updateTaskClockNum(String task_id)throws Exception;
 	
 	public List<Task> findTaskCenterByStu(String id)throws Exception;
 	

@@ -87,7 +87,7 @@ public class TchAction {
 		return tchService.findTchByPhone(s_id,phone);
 	}
 	
-	@RequestMapping("/applyStu")//0成功，1已添加，2老师不存在，3其他
+	@RequestMapping("/applyStu")
 	public @ResponseBody Msg applyStu(String s_id,String t_id,String info)throws Exception{
 		return tchService.updateStuApply(s_id, t_id, info);
 	}

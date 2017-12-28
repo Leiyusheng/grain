@@ -6,37 +6,37 @@ import grain.dto.StudentList;
 import grain.dto.Msg;
 
 public interface GrpService {
-	/**
-	 * ĞŞ¸Ä·Ö×éÃû
-	 * @param t_id ÀÏÊ¦id
-	 * @param g_id ·Ö×éid
-	 * @param g_name ·Ö×éÃû
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateGrpName(String t_id,String g_id,String g_name)throws Exception;
-	/**
-	 * ĞŞ¸Ä·Ö×éÑ§Éú
-	 * @param g_id ·Ö×éid
-	 * @param s_ids ·Ö×éÄÚµÄÑ§ÉúidÊı×é
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateGrpStu(String g_id,List<String> s_ids)throws Exception;
-	/**
-	 * É¾³ı·Ö×éÑ§Éú
-	 * @param g_id ·Ö×éid
-	 * @param s_id ĞèÒªÉ¾³ıµÄÑ§Éúid
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg deleteGrpStu(String g_id,String s_id)throws Exception;
-	/**
-	 * ²é¿´·Ö×éÄÚÑ§Éú
-	 * @param g_id ·Ö×éid
-	 * @return StudentList Ñ§ÉúÁĞ±í
-	 * @throws Exception
-	 */
-	public StudentList findGrpStu(String g_id)throws Exception;
+    /**
+     * ä¿®æ”¹åˆ†ç»„å
+     * @param t_id è€å¸ˆid
+     * @param g_id åˆ†ç»„id
+     * @param g_name åˆ†ç»„å
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateGrpName(String t_id,String g_id,String g_name)throws Exception;
+    /**
+     * ä¿®æ”¹åˆ†ç»„å­¦ç”Ÿ
+     * @param g_id åˆ†ç»„id
+     * @param s_ids åˆ†ç»„å†…çš„å­¦ç”Ÿidæ•°ç»„
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateGrpStu(String g_id,List<String> s_ids)throws Exception;
+    /**
+     * åˆ é™¤åˆ†ç»„å­¦ç”Ÿ
+     * @param g_id åˆ†ç»„id
+     * @param s_id éœ€è¦åˆ é™¤çš„å­¦ç”Ÿid
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg deleteGrpStu(String g_id,String s_id)throws Exception;
+    /**
+     * æŸ¥çœ‹åˆ†ç»„å†…å­¦ç”Ÿ
+     * @param g_id åˆ†ç»„id
+     * @return StudentList å­¦ç”Ÿåˆ—è¡¨
+     * @throws Exception
+     */
+    public StudentList findGrpStu(String g_id)throws Exception;
 
 }

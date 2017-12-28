@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
+import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,409 +38,420 @@ import grain.service.UserService;
 @Service
 public class UserServiceImpl implements UserService {
 
-	@Autowired
+    @Autowired
     private ServletContext servletContext;
-	@Autowired
-	private StuMapper stuMapper;
-	@Autowired
-	private TchMapper tchMapper;
-	@Autowired
-	private CtctMapper ctctMapper;
-	@Autowired
-	private GrpMapper grpMapper;
-	@Autowired
-	private TaskMapper taskMapper;
-	@Autowired
-	private TaskResultMapper taskResultMapper;
-	@Autowired
-	private BoardMapper boardMapper;
-	@Autowired
-	private ImgCompressService imgCompressService;
-	
-	private final String rootPath;//tomcat¸ùÄ¿Â¼Ãû
-	
-	public UserServiceImpl() {
-		this.rootPath = "apache-tomcat";
-	}
-	public UserServiceImpl(String rootPath) {
-		this.rootPath = rootPath;
-	}
-	
-	//MD5¼ÓÃÜ
-	public String EncoderByMd5(String s) throws Exception{ 
-	 	//»ñµÃMD5ÕªÒªËã·¨µÄ MessageDigest ¶ÔÏó  
-	 	MessageDigest mdInst = MessageDigest.getInstance("MD5");  
-	 	//Ê¹ÓÃÖ¸¶¨µÄ×Ö½Ú¸üĞÂÕªÒª  
-	 	mdInst.update(s.getBytes());  
-	 	//»ñµÃÃÜÎÄ  
-	 	byte[] md = mdInst.digest();  
-	 	//°ÑÃÜÎÄ×ª»»³ÉÊ®Áù½øÖÆµÄ×Ö·û´®ĞÎÊ½  
-	 	StringBuffer buf = new StringBuffer("");  
-	 	for (int i,offset = 0; offset < md.length; offset++) {  
-	 		i = md[offset];  
-	 		if (i < 0)  
-	 			i += 256;
-	 		if (i < 16)  
-	 			buf.append("0");  
-	 		buf.append(Integer.toHexString(i));  
-	 	}
-	 	return buf.toString();
-	}
-	//µÇÂ¼
-	@Override
-	public MsgId login(int identity, String phone, String pwd) throws Exception {
-		int status=3;
-		String id=null;
-		if(identity==1){
-			try {
-				Teacher teacher=tchMapper.findTchByPhone(phone);
-				if(EncoderByMd5(pwd).equals(teacher.getPassword())){
-					status=0;
-					id=teacher.getTeacher_id();
-				}
-				else{
-					status=1;
-				}
-			} catch (Exception e) {
-				status=2;
-				//throw e;
-			}
-		}
-		else if(identity==2){
-			try {
-				Student student=stuMapper.findStuByPhone(phone);
-				if(EncoderByMd5(pwd).equals(student.getPassword())){
-					status=0;
-					id=student.getStudent_id();
-				}
-				else{
-					status=1;
-				}
-			} catch (Exception e) {
-				status=2;
-				//throw e;
-			}
-		}
-		MsgId loginMsg=new MsgId(status,id);
-		return loginMsg;
-	}
-	//ÑéÖ¤µç»°ÊÇ·ñÓĞĞ§
-	public int checkPhone(int method, String phone) throws Exception {
-		int status=3;
-		Teacher teacher=null;
-		Student student=null;
-		switch (method) {
-		case 1:
-			teacher=tchMapper.findTchByPhone(phone);
-			if(teacher==null){
-				status=0;
-			}
-			break;
-		case 2:
-			student=stuMapper.findStuByPhone(phone);
-			if(student==null){
-				status=0;
-			}
-			break;
-		case 3:
-			teacher=tchMapper.findTchByPhone(phone);
-			if(teacher!=null){
-				status=0;
-			}
-			break;
-		case 4:
-			student=stuMapper.findStuByPhone(phone);
-			if(student!=null){
-				status=0;
-			}
-			break;
-		default:
-			break;
-		}
-		return status;
-	}
-	//×¢²á
-	@Override
-	public Msg insertUser(int identity, String phone, String pwd) throws Exception {
-		int status=3;
-		if(identity==1){
-			Teacher teacher=tchMapper.findTchByPhone(phone);
-			if(teacher==null){
-				String s=UUID.randomUUID().toString();
-				String id=s.substring(0,8)+s.substring(9,13)+s.substring(14,18)+s.substring(19,23)+s.substring(24);
-				String name="¹ÈÁ£"+phone.substring(7);
-				teacher=new Teacher(id,name,phone,EncoderByMd5(pwd));
-				Group group=new Group(id,id);
-				try {
-					tchMapper.insertTch(teacher);
-					grpMapper.insertGroup(group);
-					status=0;
-				} catch (Exception e) {
-					status=3;
-					throw e;
-				}
-			}
-			else{
-				status=2;
-			}
-		}
-		else if(identity==2){
-			Student student=stuMapper.findStuByPhone(phone);
-			if(student==null){
-				String s=UUID.randomUUID().toString();
-				String id=s.substring(0,8)+s.substring(9,13)+s.substring(14,18)+s.substring(19,23)+s.substring(24);
-				String name="¹ÈÁ£"+phone.substring(7);
-				student=new Student(id,name,phone,EncoderByMd5(pwd));
-				try {
-					stuMapper.insertStu(student);
-					status=0;
-				} catch (Exception e) {
-					status=3;
-					throw e;
-				}
-			}
-			else{
-				status=2;
-			}
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	/**
-	 * ĞŞ¸ÄÃÜÂë 
-	 * 1´«µç»°£¬2´«id
-	 */
-	@Override
-	public Msg updatePwd(int method, int identity, String phone, String new_pwd) throws Exception {
-		int status=3;
-		if(identity==1){
-			Teacher teacher=null;
-			if(method==1){
-				teacher=tchMapper.findTchByPhone(phone);
-			}
-			else if(method==2){
-				teacher=tchMapper.findTchById(phone);
-			}
-			if(teacher!=null){
-				teacher.setPassword(EncoderByMd5(new_pwd));
-				try {
-					status=tchMapper.updateTchById(teacher);
-					if(status==0){
-						status=1;
-					}
-					else{
-						status=0;
-					}
-				} catch (Exception e) {
-					status=3;
-					throw e;
-				}
-			}
-			else{
-				status=2;
-			}
-		}
-		else if(identity==2){
-			Student student=null;
-			if(method==1){
-				student=stuMapper.findStuByPhone(phone);
-			}
-			else if(method==2){
-				student=stuMapper.findStuById(phone);
-			}
-			if(student!=null){
-				student.setPassword(EncoderByMd5(new_pwd));
-				try {
-					status=stuMapper.updateStuById(student);
-					if(status==0){
-						status=1;
-					}
-					else{
-						status=0;
-					}
-				} catch (Exception e) {
-					status=3;
-					throw e;
-				}
-			}
-			else{
-				status=2;
-			}
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//´¦ÀíÑ§ÉúÀÏÊ¦¹ØÏµ£¬1Í¬Òâ£¬2É¾³ı
-	@Override
-	public Msg updateContact(String t_id, String s_id, int method) throws Exception {
-		int status=1;
-		try {
-			status=ctctMapper.updateContact(method, t_id, s_id);
-			if(status==0){
-				status=1;
-			}
-			else if(method==1){
-				grpMapper.insertGroupStu(t_id, s_id);
-				grpMapper.updateGroupStuCount(1, t_id);
-				tchMapper.updateTchStuCount(1, t_id);
-				status=0;
-			}
-			else if(method==2){
-				tchMapper.updateTchStuCount(0, t_id);
-				grpMapper.updateStuCount(t_id, s_id);
-				List<Task> tList=taskMapper.findStuTaskByTch(t_id, s_id);
-				for(int i=0;i<tList.size();i++){//ÒÆ³ı¸ÃÀÏÊ¦·¢¸ø¸ÃÑ§ÉúµÄÈÎÎñ¼ÇÂ¼
-					Task task=tList.get(i);
-					if(task.getStatus()<2){//Ö»ÒÆ³ı»¹Î´½áÊøµÄ
-						try {
-							taskMapper.deleteTaskStu(task.getTask_id(), s_id);
-							taskMapper.updateTaskStuCount(0, task.getTask_id());
-						} catch (Exception e) {
-							throw e;
-						}
-					}
-				}
-				grpMapper.deleteStu(t_id, s_id);
-				status=0;
-			}
-		} catch (Exception e) {
-			status=1;
-			throw e;
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//µãÔŞ
-	@Override
-	public Msg updatePraise(Praise praise) throws Exception {
-		int status=1;
-		Praise pr=taskResultMapper.findPraise(praise);
-		try {
-			if(pr==null){
-				taskResultMapper.insertPraise(praise);
-				boardMapper.updateResultPraise(praise);
-			}
-			else if(pr.getPraise_status()!=praise.getPraise_status()){
-				taskResultMapper.updatePraise(praise);
-				boardMapper.updateResultPraise(praise);
-			}
-			status=0;
-		} catch (Exception e) {
-			status=1;
-			throw e;
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//»ñÈ¡ÓÃ»§ÈÎÎñ°å±³¾°Í¼Æ¬
-	@Override
-	public MsgUrl checkBoardPic(int identity, String id) throws Exception {
-		int status=1;
-		String url=null;
-		if(identity==1){
-			url=tchMapper.findTchById(id).getBoard_background();
-			status=0;
-		}
-		else if(identity==2){
-			url=stuMapper.findStuById(id).getBoard_background();
-			status=0;
-		}
-		MsgUrl msg=new MsgUrl(status,url);
-		return msg;
-	}
-	/**
-	 * ÑéÖ¤ÑéÖ¤Âë
-	 * @param way 1ÎªÍ¼Æ¬ÑéÖ¤Âë£¬2Îª¶ÌĞÅÑéÖ¤Âë
-	 * inf 0ÎªÑéÖ¤³É¹¦£¬1ÎªÍ¼Æ¬ÑéÖ¤´íÎó£¬4ÎªsessionÖĞÃ»ÓĞÍ¼Æ¬ÑéÖ¤Âë£¬5Îª¶ÌĞÅÑéÖ¤´íÎó£¬6ÎªsessionÖĞÃ»ÓĞ¶ÌĞÅÑéÖ¤Âë
-	 */
-	@Override
-	public int checkVerifyCode(int way, String code, HttpServletRequest request) {
-		int inf=1;
-		HttpSession session = request.getSession();
-		if(way==1){
-			if(code.length()==4){//ÑéÖ¤Âë³¤¶È
-				if(session.getAttribute("pic_code") == null){//sessionÖĞÃ»ÓĞÑéÖ¤Âë
-					inf=4;
-				}else{
-					String pic_code=session.getAttribute("pic_code")+"";
-					if(code.equals(pic_code)){
-						inf=0;
-					}
-					else{
-						inf=1;
-					}
-				}
-			}
-			else{
-				inf=1;
-			}
-		}
-		else if(way==2){
-			if(code.length()==4){//ÑéÖ¤Âë³¤¶È
-				if(session.getAttribute("sms_code") == null){//sessionÖĞÃ»ÓĞÑéÖ¤Âë
-					inf=6;
-				}else{
-					String sms_code=session.getAttribute("sms_code")+"";
-					if(code.equals(sms_code)){
-						inf=0;
-					}
-					else{
-						inf=5;
-					}
-				}
-			}
-			else{
-				inf=5;
-			}
-		}
-		return inf;
-	}
-	/**
-	 * ±£´æÍ¼Æ¬ÎÄ¼ş
-	 * method£º1ÎªÍ·Ïñ£¬2ÎªÈÎÎñÍ¼Æ¬£¬3Îª½á¹ûÍ¼Æ¬
-	 */
-	@Override
-	public MsgUrl saveFile(int method, MultipartFile file) throws Exception{
-		if (!file.isEmpty()) {
+    @Autowired
+    private StuMapper stuMapper;
+    @Autowired
+    private TchMapper tchMapper;
+    @Autowired
+    private CtctMapper ctctMapper;
+    @Autowired
+    private GrpMapper grpMapper;
+    @Autowired
+    private TaskMapper taskMapper;
+    @Autowired
+    private TaskResultMapper taskResultMapper;
+    @Autowired
+    private BoardMapper boardMapper;
+    @Autowired
+    private ImgCompressService imgCompressService;
+    
+    private final String rootPath;//tomcatæ ¹ç›®å½•å
+    
+    public UserServiceImpl() {
+        this.rootPath = "apache-tomcat";
+    }
+    public UserServiceImpl(String rootPath) {
+        this.rootPath = rootPath;
+    }
+    
+    //MD5åŠ å¯†
+    public String EncoderByMd5(String s) throws Exception{ 
+        //è·å¾—MD5æ‘˜è¦ç®—æ³•çš„ MessageDigest å¯¹è±¡  
+        MessageDigest mdInst = MessageDigest.getInstance("MD5");  
+        //ä½¿ç”¨æŒ‡å®šçš„å­—èŠ‚æ›´æ–°æ‘˜è¦  
+        mdInst.update(s.getBytes());  
+        //è·å¾—å¯†æ–‡  
+        byte[] md = mdInst.digest();  
+        //æŠŠå¯†æ–‡è½¬æ¢æˆåå…­è¿›åˆ¶çš„å­—ç¬¦ä¸²å½¢å¼  
+        StringBuffer buf = new StringBuffer("");  
+        for (int i,offset = 0; offset < md.length; offset++) {  
+            i = md[offset];  
+            if (i < 0)  
+                i += 256;
+            if (i < 16)  
+                buf.append("0");  
+            buf.append(Integer.toHexString(i));  
+        }
+        return buf.toString();
+    }
+    //ç™»å½•
+    @Override
+    public MsgId login(int identity, String phone, String pwd) throws Exception {
+        int status=3;
+        String id=null;
+        if(identity==1){
             try {
-                // getRealPath() È¡µÃ WEB-INF ËùÔÚÎÄ¼ş¼ĞÂ·¾¶
-                // Èç¹û²ÎÊıÊÇ "/temp", µ± temp ´æÔÚÊ±·µ»Ø temp µÄ±¾µØÂ·¾¶, ²»´æÔÚÊ±·µ»Ø null/temp (ÎŞĞ§Â·¾¶)
-            	String s = UUID.randomUUID().toString();//Ëæ»úÉú³ÉÍ¼Æ¬urlÃû
-				String url = File.separator + s.substring(0,8)+s.substring(9,13)+s.substring(14,18)+s.substring(19,23)+s.substring(24) + ".jpg";
-				String catalog = null;
-				switch (method) {
-				case 1:
-					catalog = File.separator +  "head" + File.separator;
-					break;
-				case 2:
-					catalog = File.separator +  "task" + File.separator;
-					break;
-				case 3:
-					catalog = File.separator +  "result" + File.separator;
-					break;
-				case 4:
-					catalog = File.separator +  "board" ;
-					break;
-				case 5:
-					catalog = File.separator +  "home" ;
-					break;
-				default:
-					break;
-				}
-				String path0 = servletContext.getRealPath("WEB-INF");
-				int index = path0.indexOf(rootPath);//²éÕÒtomcat¸ùÄ¿Â¼
-				if(method>3){
-					String path = path0.substring(0, index) + "pic" + catalog + url;//Ìæ»»ÎªÍ¼Æ¬×ÊÔ´Ä¿Â¼
-					FileCopyUtils.copy(file.getInputStream(), new FileOutputStream(path));
-					url = "pic" + catalog + url;
-				}
-				else{
-					String path = path0.substring(0, index) + "pic" + catalog + "original" + url;//Ìæ»»ÎªÍ¼Æ¬×ÊÔ´Ä¿Â¼
-	                FileCopyUtils.copy(file.getInputStream(), new FileOutputStream(path));
-	                String thumbnail = path0.substring(0, index) + "pic" + catalog + "thumbnail" + url;//Ìæ»»ÎªÍ¼Æ¬×ÊÔ´Ä¿Â¼
-	                imgCompressService.imgCompress(path, thumbnail,method);
-	                url = "pic" + catalog + "thumbnail" + url;
-				}
+                Teacher teacher=tchMapper.findTchByPhone(phone);
+                if(EncoderByMd5(pwd).equals(teacher.getPassword())){
+                    status=0;
+                    id=teacher.getTeacher_id();
+                }
+                else{
+                    status=1;
+                }
+            } catch (Exception e) {
+                status=2;
+                //throw e;
+            }
+        }
+        else if(identity==2){
+            try {
+                Student student=stuMapper.findStuByPhone(phone);
+                if(EncoderByMd5(pwd).equals(student.getPassword())){
+                    status=0;
+                    id=student.getStudent_id();
+                }
+                else{
+                    status=1;
+                }
+            } catch (Exception e) {
+                status=2;
+                //throw e;
+            }
+        }
+        MsgId loginMsg=new MsgId(status,id);
+        return loginMsg;
+    }
+    //éªŒè¯ç”µè¯æ˜¯å¦æœ‰æ•ˆ
+    public int checkPhone(int method, String phone) throws Exception {
+        int status=3;
+        Teacher teacher=null;
+        Student student=null;
+        switch (method) {
+        case 1:
+            teacher=tchMapper.findTchByPhone(phone);
+            if(teacher==null){
+                status=0;
+            }
+            break;
+        case 2:
+            student=stuMapper.findStuByPhone(phone);
+            if(student==null){
+                status=0;
+            }
+            break;
+        case 3:
+            teacher=tchMapper.findTchByPhone(phone);
+            if(teacher!=null){
+                status=0;
+            }
+            break;
+        case 4:
+            student=stuMapper.findStuByPhone(phone);
+            if(student!=null){
+                status=0;
+            }
+            break;
+        default:
+            break;
+        }
+        return status;
+    }
+    //æ³¨å†Œ
+    @Override
+    public Msg insertUser(int identity, String phone, String pwd) throws Exception {
+        int status=3;
+        if(identity==1){
+            Teacher teacher=tchMapper.findTchByPhone(phone);
+            if(teacher==null){
+                String s=UUID.randomUUID().toString();
+                String id=s.substring(0,8)+s.substring(9,13)+s.substring(14,18)+s.substring(19,23)+s.substring(24);
+                String name="è°·ç²’"+phone.substring(7);
+                teacher=new Teacher(id,name,phone,EncoderByMd5(pwd));
+                Group group=new Group(id,id);
+                try {
+                    tchMapper.insertTch(teacher);
+                    grpMapper.insertGroup(group);
+                    status=0;
+                } catch (Exception e) {
+                    status=3;
+                    throw e;
+                }
+            }
+            else{
+                status=2;
+            }
+        }
+        else if(identity==2){
+            Student student=stuMapper.findStuByPhone(phone);
+            if(student==null){
+                String s=UUID.randomUUID().toString();
+                String id=s.substring(0,8)+s.substring(9,13)+s.substring(14,18)+s.substring(19,23)+s.substring(24);
+                String name="è°·ç²’"+phone.substring(7);
+                student=new Student(id,name,phone,EncoderByMd5(pwd));
+                try {
+                    stuMapper.insertStu(student);
+                    status=0;
+                } catch (Exception e) {
+                    status=3;
+                    throw e;
+                }
+            }
+            else{
+                status=2;
+            }
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    /**
+     * ä¿®æ”¹å¯†ç  
+     * 1ä¼ ç”µè¯ï¼Œ2ä¼ id
+     */
+    @Override
+    public Msg updatePwd(int method, int identity, String phone, String new_pwd) throws Exception {
+        int status=3;
+        if(identity==1){
+            Teacher teacher=null;
+            if(method==1){
+                teacher=tchMapper.findTchByPhone(phone);
+            }
+            else if(method==2){
+                teacher=tchMapper.findTchById(phone);
+            }
+            if(teacher!=null){
+                teacher.setPassword(EncoderByMd5(new_pwd));
+                try {
+                    status=tchMapper.updateTchById(teacher);
+                    if(status==0){
+                        status=1;
+                    }
+                    else{
+                        status=0;
+                    }
+                } catch (Exception e) {
+                    status=3;
+                    throw e;
+                }
+            }
+            else{
+                status=2;
+            }
+        }
+        else if(identity==2){
+            Student student=null;
+            if(method==1){
+                student=stuMapper.findStuByPhone(phone);
+            }
+            else if(method==2){
+                student=stuMapper.findStuById(phone);
+            }
+            if(student!=null){
+                student.setPassword(EncoderByMd5(new_pwd));
+                try {
+                    status=stuMapper.updateStuById(student);
+                    if(status==0){
+                        status=1;
+                    }
+                    else{
+                        status=0;
+                    }
+                } catch (Exception e) {
+                    status=3;
+                    throw e;
+                }
+            }
+            else{
+                status=2;
+            }
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //å¤„ç†å­¦ç”Ÿè€å¸ˆå…³ç³»ï¼Œ1åŒæ„ï¼Œ2åˆ é™¤
+    @Override
+    public Msg updateContact(String t_id, String s_id, int method) throws Exception {
+        int status=1;
+        try {
+            status=ctctMapper.updateContact(method, t_id, s_id);
+            if(status==0){
+                status=1;
+            }
+            else if(method==1){
+                grpMapper.insertGroupStu(t_id, s_id);
+                grpMapper.updateGroupStuCount(1, t_id);
+                tchMapper.updateTchStuCount(1, t_id);
+                status=0;
+            }
+            else if(method==2){
+                tchMapper.updateTchStuCount(0, t_id);
+                grpMapper.updateStuCount(t_id, s_id);
+                List<Task> tList=taskMapper.findStuTaskByTch(t_id, s_id);
+                for(int i=0;i<tList.size();i++){//ç§»é™¤è¯¥è€å¸ˆå‘ç»™è¯¥å­¦ç”Ÿçš„ä»»åŠ¡è®°å½•
+                    Task task=tList.get(i);
+                    if(task.getStatus()<2){//åªç§»é™¤è¿˜æœªç»“æŸçš„
+                        try {
+                            taskMapper.deleteTaskStu(task.getTask_id(), s_id);
+                            taskMapper.updateTaskStuCount(0, task.getTask_id());
+                        } catch (Exception e) {
+                            throw e;
+                        }
+                    }
+                }
+                grpMapper.deleteStu(t_id, s_id);
+                status=0;
+            }
+        } catch (Exception e) {
+            status=1;
+            throw e;
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //ç‚¹èµ
+    @Override
+    public Msg updatePraise(Praise praise) throws Exception {
+        int status=1;
+        Praise pr=taskResultMapper.findPraise(praise);
+        try {
+            if(pr==null){
+                taskResultMapper.insertPraise(praise);
+                boardMapper.updateResultPraise(praise);
+            }
+            else if(pr.getPraise_status()!=praise.getPraise_status()){
+                taskResultMapper.updatePraise(praise);
+                boardMapper.updateResultPraise(praise);
+            }
+            status=0;
+        } catch (Exception e) {
+            status=1;
+            throw e;
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //è·å–ç”¨æˆ·ä»»åŠ¡æ¿èƒŒæ™¯å›¾ç‰‡
+    @Override
+    public MsgUrl checkBoardPic(int identity, String id) throws Exception {
+        int status=1;
+        String url=null;
+        if(identity==1){
+            url=tchMapper.findTchById(id).getBoard_background();
+            status=0;
+        }
+        else if(identity==2){
+            url=stuMapper.findStuById(id).getBoard_background();
+            status=0;
+        }
+        MsgUrl msg=new MsgUrl(status,url);
+        return msg;
+    }
+    /**
+     * éªŒè¯éªŒè¯ç 
+     * @param way 1ä¸ºå›¾ç‰‡éªŒè¯ç ï¼Œ2ä¸ºçŸ­ä¿¡éªŒè¯ç 
+     * inf 0ä¸ºéªŒè¯æˆåŠŸï¼Œ1ä¸ºå›¾ç‰‡éªŒè¯é”™è¯¯ï¼Œ4ä¸ºsessionä¸­æ²¡æœ‰å›¾ç‰‡éªŒè¯ç ï¼Œ5ä¸ºçŸ­ä¿¡éªŒè¯é”™è¯¯ï¼Œ6ä¸ºsessionä¸­æ²¡æœ‰çŸ­ä¿¡éªŒè¯ç 
+     */
+    @Override
+    public int checkVerifyCode(int way, String code, HttpServletRequest request) {
+        int inf=1;
+        HttpSession session = request.getSession();
+        if(way==1){
+            if(code.length()==4){//éªŒè¯ç é•¿åº¦
+                if(session.getAttribute("pic_code") == null){//sessionä¸­æ²¡æœ‰éªŒè¯ç 
+                    inf=4;
+                }else{
+                    String pic_code=session.getAttribute("pic_code")+"";
+                    if(code.equals(pic_code)){
+                        inf=0;
+                    }
+                    else{
+                        inf=1;
+                    }
+                }
+            }
+            else{
+                inf=1;
+            }
+        }
+        else if(way==2){
+            if(code.length()==4){//éªŒè¯ç é•¿åº¦
+                if(session.getAttribute("sms_code") == null){//sessionä¸­æ²¡æœ‰éªŒè¯ç 
+                    inf=6;
+                }else{
+                    String sms_code=session.getAttribute("sms_code")+"";
+                    if(code.equals(sms_code)){
+                        inf=0;
+                    }
+                    else{
+                        inf=5;
+                    }
+                }
+            }
+            else{
+                inf=5;
+            }
+        }
+        return inf;
+    }
+    /**
+     * ä¿å­˜å›¾ç‰‡æ–‡ä»¶
+     * methodï¼š1ä¸ºå¤´åƒï¼Œ2ä¸ºä»»åŠ¡å›¾ç‰‡ï¼Œ3ä¸ºç»“æœå›¾ç‰‡
+     */
+    @Override
+    public MsgUrl saveFile(int method, MultipartFile file) throws Exception{
+        if (!file.isEmpty()) {
+            try {
+                // getRealPath() å–å¾— WEB-INF æ‰€åœ¨æ–‡ä»¶å¤¹è·¯å¾„
+                // å¦‚æœå‚æ•°æ˜¯ "/temp", å½“ temp å­˜åœ¨æ—¶è¿”å› temp çš„æœ¬åœ°è·¯å¾„, ä¸å­˜åœ¨æ—¶è¿”å› null/temp (æ— æ•ˆè·¯å¾„)
+                String s = UUID.randomUUID().toString();//éšæœºç”Ÿæˆå›¾ç‰‡urlå
+                String url = File.separator + s.substring(0,8)+s.substring(9,13)+s.substring(14,18)+s.substring(19,23)+s.substring(24) + ".jpg";
+                String catalog = null;
+                Calendar now = Calendar.getInstance();
+                switch (method) {
+                case 1:
+                    catalog = File.separator +  "head" + File.separator;
+                    break;
+                case 2:
+                    catalog = File.separator +  "task" + File.separator;
+                    break;
+                case 3:
+                    catalog = File.separator +  "result" + File.separator + now.get(Calendar.YEAR) + File.separator + now.get(Calendar.MONTH) + File.separator;
+                    break;
+                case 4:
+                    catalog = File.separator +  "board" ;
+                    break;
+                case 5:
+                    catalog = File.separator +  "home" ;
+                    break;
+                default:
+                    break;
+                }
+                String path0 = servletContext.getRealPath("WEB-INF");
+                int index = path0.indexOf(rootPath);//æŸ¥æ‰¾tomcatæ ¹ç›®å½•
+                if(method>3){
+                    String path = path0.substring(0, index) + "pic" + catalog + url;//æ›¿æ¢ä¸ºå›¾ç‰‡èµ„æºç›®å½•
+                    FileCopyUtils.copy(file.getInputStream(), new FileOutputStream(path));
+                    url = "pic" + catalog + url;
+                }
+                else{
+                    String path = path0.substring(0, index) + "pic" + catalog + "original";//æ›¿æ¢ä¸ºå›¾ç‰‡èµ„æºç›®å½•
+                    File fp = new File(path);
+                    if (!fp.exists()) {
+                        fp.mkdirs();
+                    }
+                    path += url;
+                    FileCopyUtils.copy(file.getInputStream(), new FileOutputStream(path));
+                    String thumbnail = path0.substring(0, index) + "pic" + catalog + "thumbnail";//æ›¿æ¢ä¸ºå›¾ç‰‡èµ„æºç›®å½•
+                    fp = new File(thumbnail);
+                    if (!fp.exists()) {
+                        fp.mkdirs();
+                    }
+                    thumbnail += url;
+                    imgCompressService.imgCompress(path, thumbnail,method);
+                    url = "pic" + catalog + "thumbnail" + url;
+                }
                 MsgUrl msgUrl=new MsgUrl(0,url);
                 return msgUrl;
             } catch (IOException e) {
@@ -448,5 +460,5 @@ public class UserServiceImpl implements UserService {
         }
         MsgUrl msgUrl=new MsgUrl(1,null);
         return msgUrl;
-	}
+    }
 }

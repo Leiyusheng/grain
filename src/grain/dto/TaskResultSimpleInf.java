@@ -9,8 +9,10 @@ public class TaskResultSimpleInf {
 	private Date date;
 	private float score;
 	private int time;
+	private String comments;
 	private float tch_score;
 	private String tch_comment;
+	private int clock_rank;
 	
 	public TaskResultSimpleInf() {}
 	
@@ -19,8 +21,10 @@ public class TaskResultSimpleInf {
 		this.date = new Date(taskResult.getPublish_time().getTime());
 		this.score = taskResult.getSelf_score();
 		this.time = taskResult.getPractice_time();
+		this.comments = taskResult.getComments();
 		this.tch_score = taskResult.getTch_score();
 		this.tch_comment = taskResult.getTch_comment();
+		this.clock_rank = taskResult.getClock_rank();
 	}
 	
 	public String getTask_res_id() {
@@ -55,7 +59,15 @@ public class TaskResultSimpleInf {
 		this.time = time;
 	}
 
-	public float getTch_score() {
+	public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    public float getTch_score() {
 		return tch_score;
 	}
 
@@ -71,10 +83,19 @@ public class TaskResultSimpleInf {
 		this.tch_comment = tch_comment;
 	}
 
-	@Override
-	public String toString() {
-		return "TaskResultSimpleInf [task_res_id=" + task_res_id + ", date=" + date + ", score=" + score + ", time="
-				+ time + ", tch_score=" + tch_score + ", tch_comment=" + tch_comment + "]";
-	}
+	public int getClock_rank() {
+        return clock_rank;
+    }
+
+    public void setClock_rank(int clock_rank) {
+        this.clock_rank = clock_rank;
+    }
+
+    @Override
+    public String toString() {
+        return "TaskResultSimpleInf [task_res_id=" + task_res_id + ", date=" + date + ", score=" + score + ", time="
+                + time + ", comments=" + comments + ", tch_score=" + tch_score + ", tch_comment=" + tch_comment
+                + ", clock_rank=" + clock_rank + "]";
+    }
 	
 }

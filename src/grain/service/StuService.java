@@ -7,129 +7,129 @@ import grain.dto.Msg;
 import grain.dto.TeacherList;
 
 public interface StuService {
-	/**
-	 * Í¨¹ıµç»°²éÕÒÑ§Éú
-	 * @param t_id ÀÏÊ¦id
-	 * @param phone Ñ§Éúµç»°
-	 * @return CheckSearchInf ¸ÃÑ§ÉúµÄ²éÕÒĞÅÏ¢
-	 * @throws Exception
-	 */
-	public CheckSearchInf findStuByPhone(String t_id,String phone)throws Exception;
-	/**
-	 * ²é¿´Ñ§ÉúĞÅÏ¢
-	 * @param id Ñ§Éúid
-	 * @return CheckStuInf Ñ§Éú¸öÈËĞÅÏ¢
-	 * @throws Exception
-	 */
-	public CheckStuInf findStuInf(String id)throws Exception;
-	/**
-	 * ĞŞ¸ÄÑ§ÉúĞÕÃû
-	 * @param s_id Ñ§Éúid
-	 * @param s_name Ñ§ÉúÃû
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateStuName(String s_id,String s_name)throws Exception;
-	/**
-	 * ĞŞ¸ÄÑ§ÉúÍ·Ïñ
-	 * @param s_id Ñ§Éúid
-	 * @param logo Í·ÏñÍ¼Æ¬Â·¾¶
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateStuLogo(String s_id,String logo)throws Exception;
-	/**
-	 * ĞŞ¸ÄÑ§ÉúĞÔ±ğ
-	 * @param s_id Ñ§Éúid
-	 * @param gender Ñ§ÉúĞÔ±ğ
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateStuGender(String s_id,int gender)throws Exception;
-	/**
-	 * ĞŞ¸ÄÑ§ÉúÉúÈÕ
-	 * @param s_id Ñ§Éúid
-	 * @param birthday Ñ§ÉúÉúÈÕ
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateStuBirthday(String s_id,String birthday)throws Exception;
-	/**
-	 * ĞŞ¸ÄÑ§ÉúÇ©Ãû
-	 * @param s_id Ñ§Éúid
-	 * @param sign Ñ§ÉúÇ©Ãû
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateStuSign(String s_id,String sign)throws Exception;
-	/**
-	 * ĞŞ¸ÄÑ§Éú±¸×¢
-	 * @param s_id Ñ§Éúid
-	 * @param inf Ñ§Éú±¸×¢
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateStuInf(String s_id,String inf)throws Exception;
-	/**
-	 * ĞŞ¸ÄÑ§Éú¸öÈËÖ÷Ò³±³¾°
-	 * @param s_id Ñ§Éúid
-	 * @param home_pic ±³¾°Í¼Æ¬Â·¾¶
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateStuHomePic(String s_id,String home_pic)throws Exception;
-	/**
-	 * ĞŞ¸ÄÑ§ÉúÈÎÎñ°å±³¾°
-	 * @param s_id Ñ§Éúid
-	 * @param board_pic ±³¾°Í¼Æ¬Â·¾¶
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateStuBoardPic(String s_id,String board_pic)throws Exception;
-	/**
-	 * ²é¿´Ñ§ÉúÈÎÎñ°åÈ¨ÏŞ
-	 * @param s_id Ñ§Éúid
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg findStuAccess(String s_id)throws Exception;
-	/**
-	 * ĞŞ¸ÄÑ§ÉúÈÎÎñ°åÈ¨ÏŞ
-	 * @param s_id Ñ§Éúid
-	 * @param access ¸öÈËÈ¨ÏŞ
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateStuAccess(String s_id,int access)throws Exception;
-	/**
-	 * ¸üĞÂ¶ÔÀÏÊ¦µÄÉêÇë
-	 * @param s_id Ñ§Éúid
-	 * @param t_id ÀÏÊ¦id
-	 * @param info ÉêÇë±¸×¢
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg updateTchApply(String s_id,String t_id,String info)throws Exception;
-	/**
-	 * ²é¿´ÀÏÊ¦ÁĞ±í
-	 * @param s_id Ñ§Éúid
-	 * @return TeacherList ÀÏÊ¦ÁĞ±í
-	 * @throws Exception
-	 */
-	public TeacherList findTchList(String s_id)throws Exception;
-	/**
-	 * ²é¿´Ñ§ÉúµÄÉêÇë¼ÇÂ¼
-	 * @param s_id Ñ§Éúid
-	 * @return ApplyList ÉêÇëÁĞ±í
-	 * @throws Exception
-	 */
-	public ApplyList findApplyList(String s_id) throws Exception;
-	/**
-	 * É¾³ıÉêÇë¼ÇÂ¼
-	 * @param t_id ÀÏÊ¦id
-	 * @param s_id Ñ§Éúid
-	 * @return Msg ·µ»ØĞÅÏ¢£º0³É¹¦£¬1ÆäËû
-	 * @throws Exception
-	 */
-	public Msg deleteApply(String t_id, String s_id) throws Exception;
+    /**
+     * é€šè¿‡ç”µè¯æŸ¥æ‰¾å­¦ç”Ÿ
+     * @param t_id è€å¸ˆid
+     * @param phone å­¦ç”Ÿç”µè¯
+     * @return CheckSearchInf è¯¥å­¦ç”Ÿçš„æŸ¥æ‰¾ä¿¡æ¯
+     * @throws Exception
+     */
+    public CheckSearchInf findStuByPhone(String t_id,String phone)throws Exception;
+    /**
+     * æŸ¥çœ‹å­¦ç”Ÿä¿¡æ¯
+     * @param id å­¦ç”Ÿid
+     * @return CheckStuInf å­¦ç”Ÿä¸ªäººä¿¡æ¯
+     * @throws Exception
+     */
+    public CheckStuInf findStuInf(String id)throws Exception;
+    /**
+     * ä¿®æ”¹å­¦ç”Ÿå§“å
+     * @param s_id å­¦ç”Ÿid
+     * @param s_name å­¦ç”Ÿå
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateStuName(String s_id,String s_name)throws Exception;
+    /**
+     * ä¿®æ”¹å­¦ç”Ÿå¤´åƒ
+     * @param s_id å­¦ç”Ÿid
+     * @param logo å¤´åƒå›¾ç‰‡è·¯å¾„
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateStuLogo(String s_id,String logo)throws Exception;
+    /**
+     * ä¿®æ”¹å­¦ç”Ÿæ€§åˆ«
+     * @param s_id å­¦ç”Ÿid
+     * @param gender å­¦ç”Ÿæ€§åˆ«
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateStuGender(String s_id,int gender)throws Exception;
+    /**
+     * ä¿®æ”¹å­¦ç”Ÿç”Ÿæ—¥
+     * @param s_id å­¦ç”Ÿid
+     * @param birthday å­¦ç”Ÿç”Ÿæ—¥
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateStuBirthday(String s_id,String birthday)throws Exception;
+    /**
+     * ä¿®æ”¹å­¦ç”Ÿç­¾å
+     * @param s_id å­¦ç”Ÿid
+     * @param sign å­¦ç”Ÿç­¾å
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateStuSign(String s_id,String sign)throws Exception;
+    /**
+     * ä¿®æ”¹å­¦ç”Ÿå¤‡æ³¨
+     * @param s_id å­¦ç”Ÿid
+     * @param inf å­¦ç”Ÿå¤‡æ³¨
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateStuInf(String s_id,String inf)throws Exception;
+    /**
+     * ä¿®æ”¹å­¦ç”Ÿä¸ªäººä¸»é¡µèƒŒæ™¯
+     * @param s_id å­¦ç”Ÿid
+     * @param home_pic èƒŒæ™¯å›¾ç‰‡è·¯å¾„
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateStuHomePic(String s_id,String home_pic)throws Exception;
+    /**
+     * ä¿®æ”¹å­¦ç”Ÿä»»åŠ¡æ¿èƒŒæ™¯
+     * @param s_id å­¦ç”Ÿid
+     * @param board_pic èƒŒæ™¯å›¾ç‰‡è·¯å¾„
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateStuBoardPic(String s_id,String board_pic)throws Exception;
+    /**
+     * æŸ¥çœ‹å­¦ç”Ÿä»»åŠ¡æ¿æƒé™
+     * @param s_id å­¦ç”Ÿid
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg findStuAccess(String s_id)throws Exception;
+    /**
+     * ä¿®æ”¹å­¦ç”Ÿä»»åŠ¡æ¿æƒé™
+     * @param s_id å­¦ç”Ÿid
+     * @param access ä¸ªäººæƒé™
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateStuAccess(String s_id,int access)throws Exception;
+    /**
+     * æ›´æ–°å¯¹è€å¸ˆçš„ç”³è¯·
+     * @param s_id å­¦ç”Ÿid
+     * @param t_id è€å¸ˆid
+     * @param info ç”³è¯·å¤‡æ³¨
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg updateTchApply(String s_id,String t_id,String info)throws Exception;
+    /**
+     * æŸ¥çœ‹è€å¸ˆåˆ—è¡¨
+     * @param s_id å­¦ç”Ÿid
+     * @return TeacherList è€å¸ˆåˆ—è¡¨
+     * @throws Exception
+     */
+    public TeacherList findTchList(String s_id)throws Exception;
+    /**
+     * æŸ¥çœ‹å­¦ç”Ÿçš„ç”³è¯·è®°å½•
+     * @param s_id å­¦ç”Ÿid
+     * @return ApplyList ç”³è¯·åˆ—è¡¨
+     * @throws Exception
+     */
+    public ApplyList findApplyList(String s_id) throws Exception;
+    /**
+     * åˆ é™¤ç”³è¯·è®°å½•
+     * @param t_id è€å¸ˆid
+     * @param s_id å­¦ç”Ÿid
+     * @return Msg è¿”å›ä¿¡æ¯ï¼š0æˆåŠŸï¼Œ1å…¶ä»–
+     * @throws Exception
+     */
+    public Msg deleteApply(String t_id, String s_id) throws Exception;
 }

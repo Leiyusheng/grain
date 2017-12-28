@@ -25,327 +25,327 @@ import grain.service.StuService;
 
 @Service
 public class StuServiceImpl implements StuService {
-	@Autowired
-	StuMapper stuMapper;
-	@Autowired
-	TchMapper tchMapper;
-	@Autowired
-	CtctMapper ctctMapper;
-	//²éÕÒÑ§Éú
-	@Override
-	public CheckSearchInf findStuByPhone(String t_id, String phone) throws Exception {
-		int status=3;
-		SearchInf sInf;
-		Student student=stuMapper.findStuByPhone(phone);
-		if(student==null){
-			status=1;
-			sInf=new SearchInf();
-		}
-		else{
-			Contact contact=ctctMapper.findContactByStuPhone(phone, t_id);
-			if(contact==null){
-				status=0;
-			}
-			else if(contact.getStatus()==1){//Ñ§ÉúÒÑÍ¬Òâ
-				status=2;
-			}
-			else{
-				status=0;
-			}
-			sInf=new SearchInf(student);
-		}
-		CheckSearchInf cSearchInf=new CheckSearchInf(status, sInf);
-		return cSearchInf;
-	}
-	//²é¿´Ñ§ÉúÐÅÏ¢
-	@Override
-	public CheckStuInf findStuInf(String id) throws Exception {
-		int status=1;
-		StudentInf stuInfo = null;
-		try {
-			Student student=stuMapper.findStuById(id);
-			stuInfo=new StudentInf(student);
-			status=0;
-		} catch (Exception e) {
-			throw e;
-		}
-		CheckStuInf checkStuInf=new CheckStuInf(status,stuInfo);
-		return checkStuInf;
-	}
-	//±à¼­Ñ§ÉúÐÕÃû
-	@Override
-	public Msg updateStuName(String s_id,String s_name) throws Exception {
-		int status=1;
-		try {
-			Student stu=stuMapper.findStuById(s_id);
-			stu.setStudent_name(s_name);
-			status=stuMapper.updateStuById(stu);
-			if(status==0){
-				status=1;
-			}
-			else{
-				status=0;
-			}
-		} catch (Exception e) {
-			status=1;
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//±à¼­Ñ§ÉúÍ·Ïñ
-	@Override
-	public Msg updateStuLogo(String s_id,String logo) throws Exception {
-		int status=1;
-		try {
-			Student stu=stuMapper.findStuById(s_id);
-			stu.setHead_logo(logo);
-			status=stuMapper.updateStuById(stu);
-			if(status==0){
-				status=1;
-			}
-			else{
-				status=0;
-			}
-		} catch (Exception e) {
-			status=1;
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//±à¼­Ñ§ÉúÐÔ±ð
-	@Override
-	public Msg updateStuGender(String s_id,int gender) throws Exception {
-		int status=1;
-		try {
-			Student stu=stuMapper.findStuById(s_id);
-			stu.setGender(gender);
-			status=stuMapper.updateStuById(stu);
-			if(status==0){
-				status=1;
-			}
-			else{
-				status=0;
-			}
-		} catch (Exception e) {
-			status=1;
-		}
-			Msg msg=new Msg(status);
-			return msg;
-		}
-	//±à¼­Ñ§ÉúÉúÈÕ
-	@Override
-	public Msg updateStuBirthday(String s_id,String birthday) throws Exception {
-		int status=1;
-		try {
-			Student stu=stuMapper.findStuById(s_id);
-			Date date=Date.valueOf(birthday);
-			stu.setBirthday(date);
-			status=stuMapper.updateStuById(stu);
-			if(status==0){
-				status=1;
-			}
-			else{
-				status=0;
-			}
-		} catch (Exception e) {
-			status=1;
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//±à¼­Ñ§ÉúÇ©Ãû
-	@Override
-	public Msg updateStuSign(String s_id,String sign) throws Exception {
-		int status=1;
-		try {
-			Student stu=stuMapper.findStuById(s_id);
-			stu.setPersonalized_signature(sign);
-			status=stuMapper.updateStuById(stu);
-			if(status==0){
-				status=1;
-			}
-			else{
-				status=0;
-			}
-		} catch (Exception e) {
-			status=1;
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//±à¼­Ñ§Éú±¸×¢
-	@Override
-	public Msg updateStuInf(String s_id,String inf) throws Exception {
-		int status=1;
-		try {
-			Student stu=stuMapper.findStuById(s_id);
-			stu.setStudent_info(inf);
-			status=stuMapper.updateStuById(stu);
-			if(status==0){
-				status=1;
-			}
-			else{
-				status=0;
-			}
-		} catch (Exception e) {
-			status=1;
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//±à¼­Ñ§Éú¸öÈËÖ÷Ò³±³¾°
-	@Override
-	public Msg updateStuHomePic(String s_id, String home_pic) throws Exception {
-		int status=1;
-		try {
-			Student stu=stuMapper.findStuById(s_id);
-			stu.setHome_background(home_pic);
-			status=stuMapper.updateStuById(stu);
-			if(status==0){
-				status=1;
-			}
-			else{
-				status=0;
-			}
-		} catch (Exception e) {
-			status=1;
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//±à¼­Ñ§ÉúÈÎÎñ°å±³¾°Í¼Æ¬
-	@Override
-	public Msg updateStuBoardPic(String s_id,String board_pic) throws Exception {
-		int status=1;
-		try {
-			Student stu=stuMapper.findStuById(s_id);
-			stu.setBoard_background(board_pic);
-			status=stuMapper.updateStuById(stu);
-			if(status==0){
-				status=1;
-			}
-			else{
-				status=0;
-			}
-		} catch (Exception e) {
-			status=1;
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//²é¿´Ñ§Éú¹«¿ªÈ¨ÏÞ
-	public Msg findStuAccess(String s_id) throws Exception {
-		int status=-1;
-		Student stu=stuMapper.findStuById(s_id);
-		if(stu!=null){
-			status=stu.getAccess_permission();
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//ÐÞ¸ÄÑ§Éú¹«¿ªÈ¨ÏÞ
-	@Override
-	public Msg updateStuAccess(String s_id,int access) throws Exception {
-		int status=1;
-		try {
-			Student stu=stuMapper.findStuById(s_id);
-			stu.setAccess_permission(access);//ÐÞ¸ÄÑ§ÉúÈ¨ÏÞ
-			status=stuMapper.updateStuById(stu);
-			if(status==0){
-				status=1;
-			}
-			else{
-				status=0;
-			}
-		} catch (Exception e) {
-			status=1;
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//Ìí¼ÓÀÏÊ¦
-	@Override
-	public Msg updateTchApply(String s_id, String t_id, String info) throws Exception {
-		Contact contact=ctctMapper.findContactById(t_id, s_id);
-		int status=3;
-		if(contact==null){//¶ÔÓ¦¹ØÏµ²»´æÔÚ
-			Teacher teacher=tchMapper.findTchById(t_id);
-			if(teacher==null){
-				status=2;//¶ÔÓ¦ÀÏÊ¦²»´æÔÚ
-			}
-			else{
-				contact=new Contact(t_id,s_id,0,0,info);
-				try {
-					ctctMapper.insertContact(contact);
-					status=0;
-				} catch (Exception e) {
-					throw e;
-				}
-			}
-		}
-		else if(contact.getStatus()==1){
-			status=1;//ÀÏÊ¦ÒÑ´æÔÚ
-		}
-		else{
-			try {
-				ctctMapper.updateContact(0, t_id, s_id);
-				ctctMapper.updateShowStatus(0, t_id, s_id);
-				ctctMapper.updateContactTime(info, t_id, s_id);
-				status=0;
-			} catch (Exception e) {
-				status=3;
-				throw e;
-			}
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
-	//²é¿´ÀÏÊ¦ÁÐ±í
-	@Override
-	public TeacherList findTchList(String s_id) throws Exception {
-		List<Teacher> teachers=tchMapper.findTchListById(s_id);
-		TeacherList tList=new TeacherList();
-		for(int i=0;i<teachers.size();i++){
-			Teacher tch=teachers.get(i);
-			TchSimpleInf tInfo=new TchSimpleInf(tch);
-			tList.addTchInfo(tInfo);
-		}
-		return tList;
-	}
-	//²é¿´ÒÑÉêÇëÁÐ±í
-	@Override
-	public ApplyList findApplyList(String s_id) throws Exception {
-		List<Contact> contacts=ctctMapper.findTchApplyListById(s_id);
-		ApplyList aList=new ApplyList();
-		int identity=2;
-		for(int i=0;i<contacts.size();i++){
-			Contact con=contacts.get(i);
-			if(con.getShow_status()%10==0){
-				ApplyInf aInfo=new ApplyInf(identity,con);
-				aList.addApplyInfo(aInfo);
-			}
-		}
-		return aList;
-	}
-	//É¾³ýÉêÇë
-	@Override 
-	public Msg deleteApply(String t_id, String s_id) throws Exception {
-		int status=1;
-		try {
-			Contact contact=ctctMapper.findContactById(t_id, s_id);
-			int method=1+(contact.getShow_status()/10)*10;//½«show_statusµÄÊ®Î»¸ÄÎª1
-			status=ctctMapper.updateShowStatus(method, t_id, s_id);
-			if(status==0){
-				status=1;
-			}
-			else{
-				status=0;
-			}
-		} catch (Exception e) {
-			status=1;
-			throw e;
-		}
-		Msg msg=new Msg(status);
-		return msg;
-	}
+    @Autowired
+    StuMapper stuMapper;
+    @Autowired
+    TchMapper tchMapper;
+    @Autowired
+    CtctMapper ctctMapper;
+    //æŸ¥æ‰¾å­¦ç”Ÿ
+    @Override
+    public CheckSearchInf findStuByPhone(String t_id, String phone) throws Exception {
+        int status=3;
+        SearchInf sInf;
+        Student student=stuMapper.findStuByPhone(phone);
+        if(student==null){
+            status=1;
+            sInf=new SearchInf();
+        }
+        else{
+            Contact contact=ctctMapper.findContactByStuPhone(phone, t_id);
+            if(contact==null){
+                status=0;
+            }
+            else if(contact.getStatus()==1){//å­¦ç”Ÿå·²åŒæ„
+                status=2;
+            }
+            else{
+                status=0;
+            }
+            sInf=new SearchInf(student);
+        }
+        CheckSearchInf cSearchInf=new CheckSearchInf(status, sInf);
+        return cSearchInf;
+    }
+    //æŸ¥çœ‹å­¦ç”Ÿä¿¡æ¯
+    @Override
+    public CheckStuInf findStuInf(String id) throws Exception {
+        int status=1;
+        StudentInf stuInfo = null;
+        try {
+            Student student=stuMapper.findStuById(id);
+            stuInfo=new StudentInf(student);
+            status=0;
+        } catch (Exception e) {
+            throw e;
+        }
+        CheckStuInf checkStuInf=new CheckStuInf(status,stuInfo);
+        return checkStuInf;
+    }
+    //ç¼–è¾‘å­¦ç”Ÿå§“å
+    @Override
+    public Msg updateStuName(String s_id,String s_name) throws Exception {
+        int status=1;
+        try {
+            Student stu=stuMapper.findStuById(s_id);
+            stu.setStudent_name(s_name);
+            status=stuMapper.updateStuById(stu);
+            if(status==0){
+                status=1;
+            }
+            else{
+                status=0;
+            }
+        } catch (Exception e) {
+            status=1;
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //ç¼–è¾‘å­¦ç”Ÿå¤´åƒ
+    @Override
+    public Msg updateStuLogo(String s_id,String logo) throws Exception {
+        int status=1;
+        try {
+            Student stu=stuMapper.findStuById(s_id);
+            stu.setHead_logo(logo);
+            status=stuMapper.updateStuById(stu);
+            if(status==0){
+                status=1;
+            }
+            else{
+                status=0;
+            }
+        } catch (Exception e) {
+            status=1;
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //ç¼–è¾‘å­¦ç”Ÿæ€§åˆ«
+    @Override
+    public Msg updateStuGender(String s_id,int gender) throws Exception {
+        int status=1;
+        try {
+            Student stu=stuMapper.findStuById(s_id);
+            stu.setGender(gender);
+            status=stuMapper.updateStuById(stu);
+            if(status==0){
+                status=1;
+            }
+            else{
+                status=0;
+            }
+        } catch (Exception e) {
+            status=1;
+        }
+            Msg msg=new Msg(status);
+            return msg;
+        }
+    //ç¼–è¾‘å­¦ç”Ÿç”Ÿæ—¥
+    @Override
+    public Msg updateStuBirthday(String s_id,String birthday) throws Exception {
+        int status=1;
+        try {
+            Student stu=stuMapper.findStuById(s_id);
+            Date date=Date.valueOf(birthday);
+            stu.setBirthday(date);
+            status=stuMapper.updateStuById(stu);
+            if(status==0){
+                status=1;
+            }
+            else{
+                status=0;
+            }
+        } catch (Exception e) {
+            status=1;
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //ç¼–è¾‘å­¦ç”Ÿç­¾å
+    @Override
+    public Msg updateStuSign(String s_id,String sign) throws Exception {
+        int status=1;
+        try {
+            Student stu=stuMapper.findStuById(s_id);
+            stu.setPersonalized_signature(sign);
+            status=stuMapper.updateStuById(stu);
+            if(status==0){
+                status=1;
+            }
+            else{
+                status=0;
+            }
+        } catch (Exception e) {
+            status=1;
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //ç¼–è¾‘å­¦ç”Ÿå¤‡æ³¨
+    @Override
+    public Msg updateStuInf(String s_id,String inf) throws Exception {
+        int status=1;
+        try {
+            Student stu=stuMapper.findStuById(s_id);
+            stu.setStudent_info(inf);
+            status=stuMapper.updateStuById(stu);
+            if(status==0){
+                status=1;
+            }
+            else{
+                status=0;
+            }
+        } catch (Exception e) {
+            status=1;
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //ç¼–è¾‘å­¦ç”Ÿä¸ªäººä¸»é¡µèƒŒæ™¯
+    @Override
+    public Msg updateStuHomePic(String s_id, String home_pic) throws Exception {
+        int status=1;
+        try {
+            Student stu=stuMapper.findStuById(s_id);
+            stu.setHome_background(home_pic);
+            status=stuMapper.updateStuById(stu);
+            if(status==0){
+                status=1;
+            }
+            else{
+                status=0;
+            }
+        } catch (Exception e) {
+            status=1;
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //ç¼–è¾‘å­¦ç”Ÿä»»åŠ¡æ¿èƒŒæ™¯å›¾ç‰‡
+    @Override
+    public Msg updateStuBoardPic(String s_id,String board_pic) throws Exception {
+        int status=1;
+        try {
+            Student stu=stuMapper.findStuById(s_id);
+            stu.setBoard_background(board_pic);
+            status=stuMapper.updateStuById(stu);
+            if(status==0){
+                status=1;
+            }
+            else{
+                status=0;
+            }
+        } catch (Exception e) {
+            status=1;
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //æŸ¥çœ‹å­¦ç”Ÿå…¬å¼€æƒé™
+    public Msg findStuAccess(String s_id) throws Exception {
+        int status=-1;
+        Student stu=stuMapper.findStuById(s_id);
+        if(stu!=null){
+            status=stu.getAccess_permission();
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //ä¿®æ”¹å­¦ç”Ÿå…¬å¼€æƒé™
+    @Override
+    public Msg updateStuAccess(String s_id,int access) throws Exception {
+        int status=1;
+        try {
+            Student stu=stuMapper.findStuById(s_id);
+            stu.setAccess_permission(access);//ä¿®æ”¹å­¦ç”Ÿæƒé™
+            status=stuMapper.updateStuById(stu);
+            if(status==0){
+                status=1;
+            }
+            else{
+                status=0;
+            }
+        } catch (Exception e) {
+            status=1;
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //æ·»åŠ è€å¸ˆ
+    @Override
+    public Msg updateTchApply(String s_id, String t_id, String info) throws Exception {
+        Contact contact=ctctMapper.findContactById(t_id, s_id);
+        int status=3;
+        if(contact==null){//å¯¹åº”å…³ç³»ä¸å­˜åœ¨
+            Teacher teacher=tchMapper.findTchById(t_id);
+            if(teacher==null){
+                status=2;//å¯¹åº”è€å¸ˆä¸å­˜åœ¨
+            }
+            else{
+                contact=new Contact(t_id,s_id,0,0,info);
+                try {
+                    ctctMapper.insertContact(contact);
+                    status=0;
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+        }
+        else if(contact.getStatus()==1){
+            status=1;//è€å¸ˆå·²å­˜åœ¨
+        }
+        else{
+            try {
+                ctctMapper.updateContact(0, t_id, s_id);
+                ctctMapper.updateShowStatus(0, t_id, s_id);
+                ctctMapper.updateContactTime(info, t_id, s_id);
+                status=0;
+            } catch (Exception e) {
+                status=3;
+                throw e;
+            }
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
+    //æŸ¥çœ‹è€å¸ˆåˆ—è¡¨
+    @Override
+    public TeacherList findTchList(String s_id) throws Exception {
+        List<Teacher> teachers=tchMapper.findTchListById(s_id);
+        TeacherList tList=new TeacherList();
+        for(int i=0;i<teachers.size();i++){
+            Teacher tch=teachers.get(i);
+            TchSimpleInf tInfo=new TchSimpleInf(tch);
+            tList.addTchInfo(tInfo);
+        }
+        return tList;
+    }
+    //æŸ¥çœ‹å·²ç”³è¯·åˆ—è¡¨
+    @Override
+    public ApplyList findApplyList(String s_id) throws Exception {
+        List<Contact> contacts=ctctMapper.findTchApplyListById(s_id);
+        ApplyList aList=new ApplyList();
+        int identity=2;
+        for(int i=0;i<contacts.size();i++){
+            Contact con=contacts.get(i);
+            if(con.getShow_status()%10==0){
+                ApplyInf aInfo=new ApplyInf(identity,con);
+                aList.addApplyInfo(aInfo);
+            }
+        }
+        return aList;
+    }
+    //åˆ é™¤ç”³è¯·
+    @Override 
+    public Msg deleteApply(String t_id, String s_id) throws Exception {
+        int status=1;
+        try {
+            Contact contact=ctctMapper.findContactById(t_id, s_id);
+            int method=1+(contact.getShow_status()/10)*10;//å°†show_statusçš„åä½æ”¹ä¸º1
+            status=ctctMapper.updateShowStatus(method, t_id, s_id);
+            if(status==0){
+                status=1;
+            }
+            else{
+                status=0;
+            }
+        } catch (Exception e) {
+            status=1;
+            throw e;
+        }
+        Msg msg=new Msg(status);
+        return msg;
+    }
 }

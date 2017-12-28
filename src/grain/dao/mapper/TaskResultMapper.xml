@@ -41,8 +41,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
      
      <update id="updateTaskResult" parameterType="taskResult">
          UPDATE taskresult SET 
-         practice_time=#{practice_time},self_score=#{self_score},finish_photo=#{finish_photo},comments=#{comments} 
-         WHERE task_result_id=#{task_result_id}
+         practice_time = #{practice_time}, self_score = #{self_score},
+         finish_photo = #{finish_photo}, comments = #{comments}, clock_rank = #{clock_rank} 
+         WHERE task_result_id = #{task_result_id}
      </update>
      
      <select id="findPraise" parameterType="praise"
@@ -70,11 +71,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
      <select id="findTaskResultByTch" resultType="taskResultTotalInf">
          SELECT student.student_id,student_name,head_logo,difficulty_level,
 		 COALESCE(SUM(taskresult.practice_time),0) AS total_time,
-		 COALESCE(result.practice_time,0) AS today_time,result.self_score
+		 COALESCE(result.practice_time,0) AS today_time,result.self_score,result.clock_rank,
+		 taskstudent.duration_day,taskstudent.total_day 
 		 FROM ((taskstudent LEFT JOIN taskresult  
 		 ON taskstudent.task_id=taskresult.task_id AND taskstudent.student_id=taskresult.student_id)
 		 LEFT JOIN student ON taskstudent.student_id=student.student_id)
-		 LEFT JOIN (SELECT student_id AS s_id,task_id AS t_id,practice_time,self_score 
+		 LEFT JOIN (SELECT student_id AS s_id,task_id AS t_id,practice_time,self_score,clock_rank 
 		 FROM taskresult WHERE TO_DAYS(publish_time)=TO_DAYS(NOW())) AS result
 		 ON taskstudent.task_id=result.t_id AND taskstudent.student_id=result.s_id
 		 WHERE taskstudent.task_id=#{value}

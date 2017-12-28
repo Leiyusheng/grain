@@ -28,40 +28,40 @@ import grain.service.VerifyCodeService;
 @Service
 public class VerifyCodeServiceImpl implements VerifyCodeService{  
   
-    //Ê¹ÓÃµ½Algerian×ÖÌå£¬ÏµÍ³ÀïÃ»ÓĞµÄ»°ĞèÒª°²×°×ÖÌå£¬×ÖÌåÖ»ÏÔÊ¾´óĞ´£¬È¥µôÁË1,0,i,o¼¸¸öÈİÒ×»ìÏıµÄ×Ö·û  
+    //ä½¿ç”¨åˆ°Algerianå­—ä½“ï¼Œç³»ç»Ÿé‡Œæ²¡æœ‰çš„è¯éœ€è¦å®‰è£…å­—ä½“ï¼Œå­—ä½“åªæ˜¾ç¤ºå¤§å†™ï¼Œå»æ‰äº†1,0,i,oå‡ ä¸ªå®¹æ˜“æ··æ·†çš„å­—ç¬¦  
     public final String VERIFY_CODES ;
     private static Random random = new Random();  
     private final String apikey ;//
   
     public VerifyCodeServiceImpl() {
-		this.VERIFY_CODES = "123456789"; 
-		this.apikey = "c76ca21acceca36b62cf147533fc91b3";
-	}
+        this.VERIFY_CODES = "123456789"; 
+        this.apikey = "c76ca21acceca36b62cf147533fc91b3";
+    }
     
     public VerifyCodeServiceImpl(String VERIFY_CODES,String apikey) {
-		this.VERIFY_CODES = VERIFY_CODES;
-		this.apikey = apikey;
-	}
+        this.VERIFY_CODES = VERIFY_CODES;
+        this.apikey = apikey;
+    }
     
-    //·¢ËÍ¶ÌĞÅÑéÖ¤Âë
+    //å‘é€çŸ­ä¿¡éªŒè¯ç 
     @Override
     public int sendSmsCode(String phone, String code) {
-    	int inf=-1;
-    	String text="ÄúµÄÑéÖ¤ÂëÊÇ"+code+"¡£Èç·Ç±¾ÈË²Ù×÷£¬ÇëºöÂÔ±¾¶ÌĞÅ";
-		YunpianRestClient client = new YunpianRestClient(apikey);//ÓÃapikeyÉú³Éclient,¿É×÷ÎªÈ«¾Ö¾²Ì¬±äÁ¿
-	    SmsOperator smsOperator = client.getSmsOperator();//»ñÈ¡ËùĞè²Ù×÷Àà
-	    ResultDO<SendSingleSmsInfo> result = smsOperator.singleSend(phone, text);//·¢ËÍ¶ÌĞÅ,ResultDO<?>.isSuccess()ÅĞ¶ÏÊÇ·ñ³É¹¦
-	    System.out.println(result);
-	    if(result.isSuccess()){
-	    	inf=0;
-	    }
-	    else{
-	    	String s=result.toString();
-	    	int i1=s.indexOf("\"code\"");
-	    	int i2=s.indexOf("\"msg\"");
-	    	inf=Integer.valueOf(s.substring(i1+7, i2-1)).intValue();
-	    }
-	    return inf;   
+        int inf=-1;
+        String text="æ‚¨çš„éªŒè¯ç æ˜¯"+code+"ã€‚å¦‚éæœ¬äººæ“ä½œï¼Œè¯·å¿½ç•¥æœ¬çŸ­ä¿¡";
+        YunpianRestClient client = new YunpianRestClient(apikey);//ç”¨apikeyç”Ÿæˆclient,å¯ä½œä¸ºå…¨å±€é™æ€å˜é‡
+        SmsOperator smsOperator = client.getSmsOperator();//è·å–æ‰€éœ€æ“ä½œç±»
+        ResultDO<SendSingleSmsInfo> result = smsOperator.singleSend(phone, text);//å‘é€çŸ­ä¿¡,ResultDO<?>.isSuccess()åˆ¤æ–­æ˜¯å¦æˆåŠŸ
+        System.out.println(result);
+        if(result.isSuccess()){
+            inf=0;
+        }
+        else{
+            String s=result.toString();
+            int i1=s.indexOf("\"code\"");
+            int i2=s.indexOf("\"msg\"");
+            inf=Integer.valueOf(s.substring(i1+7, i2-1)).intValue();
+        }
+        return inf;   
     }
   
     @Override
@@ -134,16 +134,16 @@ public class VerifyCodeServiceImpl implements VerifyCodeService{
         }  
         Arrays.sort(fractions);  
           
-        g2.setColor(Color.GRAY);// ÉèÖÃ±ß¿òÉ«  
+        g2.setColor(Color.GRAY);// è®¾ç½®è¾¹æ¡†è‰²  
         g2.fillRect(0, 0, w, h);  
           
         Color c = getRandColor(200, 250);  
-        g2.setColor(c);// ÉèÖÃ±³¾°É«  
+        g2.setColor(c);// è®¾ç½®èƒŒæ™¯è‰²  
         g2.fillRect(0, 2, w, h-4);  
           
-        //»æÖÆ¸ÉÈÅÏß  
+        //ç»˜åˆ¶å¹²æ‰°çº¿  
         Random random = new Random();  
-        g2.setColor(getRandColor(160, 200));// ÉèÖÃÏßÌõµÄÑÕÉ«  
+        g2.setColor(getRandColor(160, 200));// è®¾ç½®çº¿æ¡çš„é¢œè‰²  
         for (int i = 0; i < 20; i++) {  
             int x = random.nextInt(w - 1);  
             int y = random.nextInt(h - 1);  
@@ -152,8 +152,8 @@ public class VerifyCodeServiceImpl implements VerifyCodeService{
             g2.drawLine(x, y, x + xl + 40, y + yl + 20);  
         }  
           
-        // Ìí¼ÓÔëµã  
-        float yawpRate = 0.05f;// ÔëÉùÂÊ  
+        // æ·»åŠ å™ªç‚¹  
+        float yawpRate = 0.05f;// å™ªå£°ç‡  
         int area = (int) (yawpRate * w * h);  
         for (int i = 0; i < area; i++) {  
             int x = random.nextInt(w);  
@@ -162,7 +162,7 @@ public class VerifyCodeServiceImpl implements VerifyCodeService{
             image.setRGB(x, y, rgb);  
         }  
           
-        shear(g2, w, h, c);// Ê¹Í¼Æ¬Å¤Çú  
+        shear(g2, w, h, c);// ä½¿å›¾ç‰‡æ‰­æ›²  
   
         g2.setColor(getRandColor(100, 160));  
         int fontSize = h-4;  

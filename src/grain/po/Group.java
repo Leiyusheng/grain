@@ -8,13 +8,13 @@ public class Group {
 	private String group_name;
 	private int student_count;
 	private Date create_time;
-	
+
 	public Group() {}
-	
+
 	public Group(String group_id, String teacher_id) {
 		this.group_id = group_id;
 		this.teacher_id = teacher_id;
-		this.group_name = "ËùÓĞÈË";
+		this.group_name = "æ‰€æœ‰äºº";
 	}
 
 	public Group(String group_id, String teacher_id, String group_name) {
@@ -59,5 +59,5 @@ public class Group {
 		return "Group [group_id=" + group_id + ", teacher_id=" + teacher_id + ", group_name=" + group_name
 				+ ", student_count=" + student_count + ", create_time=" + create_time + "]";
 	}
-	
+
 }

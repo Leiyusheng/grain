@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body style="padding: 50px">
+    <script type="text/javascript">  
+    $(document).ready(function(){  
+     $.ajax({
+         type:'POST',
+         url:'http://localhost:8123/grain/editGrpStu.action',
+	 dataType:"json",      
+	 contentType:"application/json",   
+	 data:JSON.stringify(g_id:"2",[s_id:"1",s_id:"4"]),
+         success:function(){			
+	 }
+    });
+</script>
+</body>
+</html>
